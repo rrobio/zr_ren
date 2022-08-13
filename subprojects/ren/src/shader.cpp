@@ -30,8 +30,8 @@ auto check_compile(GLuint shader, Shader::Type type, std::string_view name)
 	return success;
 };
 
-Shader::Shader(std::string const& vertex_path, std::string const& fragment_path,
-			   std::string const& geometry_path)
+Shader::Shader(std::filesystem::path const& vertex_path, std::filesystem::path const& fragment_path,
+			   std::filesystem::path const& geometry_path)
 {
 	std::ifstream vertex_file(vertex_path, std::ios::ate);
 	std::ifstream fragment_file(fragment_path, std::ios::ate);
@@ -92,13 +92,18 @@ Shader::Shader(std::string const& vertex_path, std::string const& fragment_path,
 		glCompileShader(geometry);
 	}
 
-	if (!check_compile(vertex, Shader::Type::VERTEX, vertex_path)
-		|| !check_compile(fragment, Shader::Type::FRAGMENT, fragment_path)) {
+	if (!check_compile(vertex, Shader::Type::VERTEX, vertex_path.string())) {
+		m_success = false;
+		return;
+
+	}
+	if (!check_compile(fragment, Shader::Type::FRAGMENT, fragment_path.string())) {
 		m_success = false;
 		return;
 	}
+
 	if (!geometry_path.empty()) {
-		if (!check_compile(geometry, Shader::Type::GEOMETRY, geometry_path)) {
+		if (!check_compile(geometry, Shader::Type::GEOMETRY, geometry_path.string())){
 			m_success = false;
 			return;
 		}
@@ -114,7 +119,7 @@ Shader::Shader(std::string const& vertex_path, std::string const& fragment_path,
 	glDeleteShader(fragment);
 	if (!geometry_path.empty()) glDeleteShader(geometry);
 
-	if (!check_compile(ID, Shader::Type::PROGRAM, vertex_path)) {
+	if (!check_compile(ID, Shader::Type::PROGRAM, vertex_path.string())){
 		m_success = false;
 		return;
 	}

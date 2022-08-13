@@ -9,6 +9,7 @@
 #include <array>
 #include <string>
 
+#include <filesystem>
 #include <iostream>
 #include <cassert>
 
@@ -27,8 +28,9 @@ public:
 		PROGRAM
 	};
 
-	Shader(std::string const& vertex_path, std::string const& fragment_path,
-	       std::string const& geometry_path = {});
+	Shader(std::filesystem::path const& vertex_path, std::filesystem::path const& fragment_path,
+	       std::filesystem::path const& geometry_path = {});
+
 	void use()
 	{
 		glUseProgram(ID);
