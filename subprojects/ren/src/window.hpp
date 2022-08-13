@@ -16,8 +16,9 @@ namespace ren {
 
 	class Window final {
 	public:
-		Window(std::string_view name, int width, int height, bool debug = false)
+		Window(std::string name, int width, int height, bool debug = false)
 		{
+			(void)debug; // currently unused
 			glfwInit();
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -25,7 +26,7 @@ namespace ren {
 
 			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-			m_window = glfwCreateWindow(width, height, "ren", nullptr, nullptr);
+			m_window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
 			if (!m_window) {
 				std::cerr << "Failed to create GLFW window\n";
 				m_success = false;
