@@ -37,7 +37,6 @@ Shader::Shader(std::filesystem::path const& vertex_path, std::filesystem::path c
 	std::ifstream fragment_file(fragment_path, std::ios::ate);
 	std::ifstream geometry_file;
 
-    std::cout << vertex_path << "\n";
 	assert(vertex_file.is_open() && fragment_file.is_open());
 	if (!geometry_path.empty()) {
 		geometry_file.open(geometry_path, std::ios::ate);
