@@ -71,10 +71,21 @@ void toggle_debug(ren::Window& window, ImGuiIO& io)
 	}
 }
 
+auto get_root_directory() -> std::filesystem::path {
+    auto path = std::filesystem::canonical("/proc/self/exe");
+    do {
+        path = path.parent_path();
+    } while (!path.parent_path().string().ends_with("/zr"));
+
+    return path.parent_path();
+}
+
 int main()
 {
     //auto current_working_directory = std::filesystem::current_path();
-    std::cout << std::filesystem::canonical("/proc/self/exe") << "\n";
+    auto const root_directory = get_root_directory();
+    auto const ren_directory = root_directory / "subprojects/ren";
+    std::cout << ren_directory << "\n";
 
 	auto window = ren::Window("ren", screen_width, screen_height, false);
 	window.set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -88,19 +99,19 @@ int main()
 	world.push_back(ren::create_plane());
 	for (size_t i = 0; i < 10; i++) { world.push_back(ren::create_sphere()); }
 
-	auto solid_shader = ren::Shader("../shaders/solid_color.vert",
-									"../shaders/solid_color.frag");
+	auto solid_shader = ren::Shader(ren_directory / "shaders/solid_color.vert",
+									ren_directory / "shaders/solid_color.frag");
 	assert(solid_shader.success());
-	auto depth_shader = ren::Shader("../shaders/point_shadow_depth.vert",
-									"../shaders/point_shadow_depth.frag",
-									"../shaders/point_shadow_depth.geom");
+	auto depth_shader = ren::Shader(ren_directory / "shaders/point_shadow_depth.vert",
+									ren_directory / "shaders/point_shadow_depth.frag",
+									ren_directory / "shaders/point_shadow_depth.geom");
 	assert(depth_shader.success());
 	auto shadow_shader =
-		ren::Shader("../shaders/shadows.vert", "../shaders/shadows.frag");
+		ren::Shader(ren_directory / "shaders/shadows.vert", ren_directory / "shaders/shadows.frag");
 	assert(shadow_shader.success());
 	glEnable(GL_DEPTH_TEST);
 
-	auto no_tex_img = ren::Image("./res/tex/no-tex.png");
+	auto no_tex_img = ren::Image(ren_directory / "res/tex/no-tex.png");
 	auto no_tex = ren::Texture(no_tex_img);
 
 	auto light_pos = glm::vec3(-2.f, 9.f, -1.f);
