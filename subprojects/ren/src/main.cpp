@@ -123,14 +123,13 @@ int main()
 	ImGui_ImplOpenGL3_Init("#version 330 core");
 
 	ren::Log::init();
-	bool p_open = true;
 
 	auto plane_model = glm::scale(glm::mat4(1.0f), glm::vec3(15.f, 1.f, 15.f));
 	plane_model = glm::translate(plane_model, glm::vec3(0.f, -5.f, 0.f));
 
 	auto light_sphere = ren::create_sphere();
 
-	auto world_model = glm::scale(glm::mat4(1), glm::vec3(30.f, 30.f, 30.f));
+	//auto world_model = glm::scale(glm::mat4(1), glm::vec3(30.f, 30.f, 30.f));
 
 	auto material = std::make_shared<ren::Material>();
 	material->diffuse = glm::vec3(0.2f, 0.5f, 0.1f);
@@ -150,7 +149,7 @@ int main()
 	glGenBuffers(1, &pbo);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-	void* mapped_buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+	//void* mapped_buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
 	GLubyte* image_data = new GLubyte[DATA_SIZE];
