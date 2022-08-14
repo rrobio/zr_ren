@@ -9,6 +9,11 @@
 #include "material.hpp"
 #include "sphere.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 color ray_color(ray const& r, hittable const& world, int depth)
 {
 	hit_record rec;
@@ -65,6 +70,9 @@ int main()
 	std::vector<std::thread> threads(n_threads);
 
 	std::vector<std::vector<color>> colors(image_width, std::vector<color>(image_height));
+	size_t const channels = 3;
+	size_t const len = image_width * image_height * channels;
+       auto* pixels = new uint8_t[len];
 
 	auto loop = [image_width, image_height, &world, &cam, max_depth,
 				 &colors](int start, int stop) {
@@ -93,13 +101,19 @@ int main()
 	}
 	for (auto& t : threads)
 		t.join();
-	std::cerr << "\nWriting file.\n";
-	std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-	for (int i = image_height - 1; i >= 0; i--) {
+
+
+    size_t index = 0;
+    for (int i = image_height - 1; i >= 0; i--) {
 		for (int j = 0; j < image_width; j++) {
-			write_color(std::cout, colors.at(j).at(i), samples_per_pixel);
+		    auto [x,y,z] = get_pixel_tuple(colors.at(j).at(i), samples_per_pixel);
+            pixels[index++] = x;
+            pixels[index++] = y;
+            pixels[index++] = z;
 		}
 	}
 
-	std::cerr << "Done.\n";
+    stbi_write_png("./render.png", image_width, image_height, channels, pixels, image_width * channels);
+
+    delete[] pixels;
 }
