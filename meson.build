@@ -7,6 +7,6 @@ project('vr', ['cpp', 'c'],
                    ],
 )
 
-subproject('ren')
-subproject('rt')
 
+subproject('rt')
+subproject('ren')
