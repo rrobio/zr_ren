@@ -17,7 +17,7 @@ public:
   void add_object(Object &&);
   // Scene(std::vector<Object> l) : m_objects(l) {}
 
-  void render(Shader &);
+  void render(Shader &) const;
   auto *object_at(size_t index) { return &m_objects.at(index); }
   auto &objects() { return m_objects; }
   auto size() { return m_objects.size(); }
