@@ -17,10 +17,20 @@ namespace ren {
 class Object {
 public:
   Object() = default;
+  Object(Object &&o) noexcept
+      : m_mesh(std::move(o.m_mesh)), m_material(o.m_material),
+        m_model(o.m_model) {}
   Object(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
     m_mesh = Mesh::construct(vertices, indices);
   }
   Object(std::vector<Vertex> vertices) { m_mesh = Mesh::construct(vertices); }
+
+  Object &operator=(Object &&o) {
+    m_mesh = std::move(o.m_mesh);
+    m_material = o.m_material;
+    m_model = o.m_model;
+    return *this;
+  }
 
   void draw() const {
     assert(m_mesh != nullptr);
