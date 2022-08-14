@@ -23,9 +23,17 @@ public:
 
   enum Type { VERTEX, FRAGMENT, GEOMETRY, PROGRAM };
 
+  Shader() = default;
   Shader(std::filesystem::path const &vertex_path,
          std::filesystem::path const &fragment_path,
          std::filesystem::path const &geometry_path = {});
+  Shader &operator=(Shader &&other) {
+    std::cout << "ass operator\n";
+    ID = other.ID;
+    m_success = other.m_success;
+    return *this;
+  }
+  ~Shader() = default;
 
   void use() { glUseProgram(ID); }
   bool success() { return m_success; }
