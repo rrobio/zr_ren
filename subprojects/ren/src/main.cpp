@@ -27,6 +27,8 @@
 #include "log.hpp"
 #include "material.hpp"
 #include "scene.hpp"
+
+#include "renderers/shadow_mapping.hpp"
 // clang-format on
 
 int const screen_width = 1024;
@@ -88,17 +90,7 @@ int main() {
   for (size_t i = 0; i < 10; i++) {
     scene.add_object(ren::create_sphere());
   }
-  auto solid_shader = ren::Shader(ren_directory / "shaders/solid_color.vert",
-                                  ren_directory / "shaders/solid_color.frag");
-  assert(solid_shader.success());
-  auto depth_shader =
-      ren::Shader(ren_directory / "shaders/point_shadow_depth.vert",
-                  ren_directory / "shaders/point_shadow_depth.frag",
-                  ren_directory / "shaders/point_shadow_depth.geom");
-  assert(depth_shader.success());
-  auto shadow_shader = ren::Shader(ren_directory / "shaders/shadows.vert",
-                                   ren_directory / "shaders/shadows.frag");
-  assert(shadow_shader.success());
+
   glEnable(GL_DEPTH_TEST);
 
   auto no_tex_img = ren::Image(ren_directory / "res/tex/no-tex.png");
@@ -134,80 +126,29 @@ int main() {
     scene.object_at(i)->set_model(cube_model);
   }
   //  RT ---------------------
-  int const DATA_SIZE = screen_width * screen_height * channel_count;
+  // int const DATA_SIZE = screen_width * screen_height * channel_count;
 
-  GLuint pbo;
-  glGenBuffers(1, &pbo);
-  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-  glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+  // GLuint pbo;
+  // glGenBuffers(1, &pbo);
+  // glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+  // glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
   // void* mapped_buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+  // glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
-  GLubyte *image_data = new GLubyte[DATA_SIZE];
+  // GLubyte *image_data = new GLubyte[DATA_SIZE];
 
-  GLuint rt_tex;
-  glGenTextures(1, &rt_tex);
-  glBindTexture(GL_TEXTURE_2D, rt_tex);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, screen_width, screen_height, 0,
-               GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)image_data);
-  glBindTexture(GL_TEXTURE_2D, 0);
+  // GLuint rt_tex;
+  // glGenTextures(1, &rt_tex);
+  // glBindTexture(GL_TEXTURE_2D, rt_tex);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, screen_width, screen_height, 0,
+  //              GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)image_data);
+  // glBindTexture(GL_TEXTURE_2D, 0);
 
   // \RT ---------------------
-  GLuint depth_map_FBO;
-  glGenFramebuffers(1, &depth_map_FBO);
-
-  GLuint depth_cubemap;
-  glGenTextures(1, &depth_cubemap);
-
-  glBindTexture(GL_TEXTURE_CUBE_MAP, depth_cubemap);
-  for (GLuint i = 0; i < 6; i++)
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
-                 shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-  glBindFramebuffer(GL_FRAMEBUFFER, depth_map_FBO);
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_cubemap, 0);
-  glDrawBuffer(GL_NONE);
-  glReadBuffer(GL_NONE);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  float near_plane = 1.0f;
-  float far_plane = 25.0f;
-  glm::mat4 shadow_proj = glm::perspective(glm::radians(90.0f), shadow_aspect,
-                                           near_plane, far_plane);
-  std::vector<glm::mat4> shadow_transforms;
-  shadow_transforms.push_back(
-      shadow_proj * glm::lookAt(light_pos,
-                                light_pos + glm::vec3(1.0f, 0.0f, 0.0f),
-                                glm::vec3(0.0f, -1.0f, 0.0f)));
-  shadow_transforms.push_back(
-      shadow_proj * glm::lookAt(light_pos,
-                                light_pos + glm::vec3(-1.0f, 0.0f, 0.0f),
-                                glm::vec3(0.0f, -1.0f, 0.0f)));
-  shadow_transforms.push_back(
-      shadow_proj * glm::lookAt(light_pos,
-                                light_pos + glm::vec3(0.0f, 1.0f, 0.0f),
-                                glm::vec3(0.0f, 0.0f, 1.0f)));
-  shadow_transforms.push_back(
-      shadow_proj * glm::lookAt(light_pos,
-                                light_pos + glm::vec3(0.0f, -1.0f, 0.0f),
-                                glm::vec3(0.0f, 0.0f, -1.0f)));
-  shadow_transforms.push_back(
-      shadow_proj * glm::lookAt(light_pos,
-                                light_pos + glm::vec3(0.0f, 0.0f, 1.0f),
-                                glm::vec3(0.0f, -1.0f, 0.0f)));
-  shadow_transforms.push_back(
-      shadow_proj * glm::lookAt(light_pos,
-                                light_pos + glm::vec3(0.0f, 0.0f, -1.0f),
-                                glm::vec3(0.0f, -1.0f, 0.0f)));
 
   auto const speed = 0.05f;
   auto keymap = std::make_shared<ren::Keymap>();
@@ -238,6 +179,8 @@ int main() {
   //                   }});
   window.set_keymap(keymap);
 
+  auto smrenderer = ren::ShadowMappingRenderer(ren_directory, shadow_width, shadow_height);
+
   while (!should_close) {
     glClearColor(0.3f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -249,31 +192,6 @@ int main() {
     auto light_model = glm::translate(glm::mat4(1.f), light_pos);
 
     light_sphere.set_model(light_model);
-    shadow_transforms[0] =
-        (shadow_proj * glm::lookAt(light_pos,
-                                   light_pos + glm::vec3(1.0f, 0.0f, 0.0f),
-                                   glm::vec3(0.0f, -1.0f, 0.0f)));
-    shadow_transforms[1] =
-        (shadow_proj * glm::lookAt(light_pos,
-                                   light_pos + glm::vec3(-1.0f, 0.0f, 0.0f),
-                                   glm::vec3(0.0f, -1.0f, 0.0f)));
-    shadow_transforms[2] =
-        (shadow_proj * glm::lookAt(light_pos,
-                                   light_pos + glm::vec3(0.0f, 1.0f, 0.0f),
-                                   glm::vec3(0.0f, 0.0f, 1.0f)));
-    shadow_transforms[3] =
-        (shadow_proj * glm::lookAt(light_pos,
-                                   light_pos + glm::vec3(0.0f, -1.0f, 0.0f),
-                                   glm::vec3(0.0f, 0.0f, -1.0f)));
-    shadow_transforms[4] =
-        (shadow_proj * glm::lookAt(light_pos,
-                                   light_pos + glm::vec3(0.0f, 0.0f, 1.0f),
-                                   glm::vec3(0.0f, -1.0f, 0.0f)));
-    shadow_transforms[5] =
-        (shadow_proj * glm::lookAt(light_pos,
-                                   light_pos + glm::vec3(0.0f, 0.0f, -1.0f),
-                                   glm::vec3(0.0f, -1.0f, 0.0f)));
-
     auto proj =
         glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f);
     auto view = cam.view();
@@ -281,48 +199,15 @@ int main() {
     // solid_shader.set("projection", proj);
     // solid_shader.set("view", view);
     // render_scene(solid_shader, world);
-    // 1. render scene to depth cubemap
-    // --------------------------------
-    glViewport(0, 0, shadow_width, shadow_height);
-    glBindFramebuffer(GL_FRAMEBUFFER, depth_map_FBO);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    depth_shader.use();
-    for (unsigned int i = 0; i < 6; ++i)
-      depth_shader.set(("shadow_matrices[" + std::to_string(i) + "]").c_str(),
-                       shadow_transforms[i]);
-    depth_shader.set("far_plane", far_plane);
-    depth_shader.set("light_pos", light_pos);
-    scene.render(depth_shader);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // 2. render scene as normal
-    // -------------------------
-    glViewport(0, 0, screen_width, screen_height);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    shadow_shader.use();
-    shadow_shader.set("projection", proj);
-    shadow_shader.set("view", view);
-    // set lighting uniforms
-    shadow_shader.set("light.position", light_pos);
-    shadow_shader.set("view_pos", cam.pos());
-    // shadow_shader.set<int>("shadows", true); // enable/disable shadows by
-    // pressing 'SPACE'
-    shadow_shader.set("far_plane", far_plane);
+    smrenderer.render(scene, ticks, light_pos);
 
-    shadow_shader.set<GLuint>("diffuse_texture", 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, no_tex.id);
-
-    shadow_shader.set<GLuint>("depth_map", 1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, depth_cubemap);
-    scene.render(shadow_shader);
-    solid_shader.use();
-    solid_shader.set<glm::mat4>("projection", proj);
-    solid_shader.set<glm::mat4>("view", view);
-    solid_shader.set<glm::mat4>("model", light_model);
-    solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
-    light_sphere.draw();
+    // solid_shader.use();
+    // solid_shader.set<glm::mat4>("projection", proj);
+    // solid_shader.set<glm::mat4>("view", view);
+    // solid_shader.set<glm::mat4>("model", light_model);
+    // solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
+    // light_sphere.draw();
 
     window.poll_events();
     window.exec_keymap();
@@ -342,5 +227,5 @@ int main() {
     window.swap_buffers();
   }
   ren::Log::destroy();
-  delete[] image_data;
+  // delete[] image_data;
 }
