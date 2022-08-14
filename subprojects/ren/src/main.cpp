@@ -26,6 +26,7 @@
 #include "cubemap.hpp"
 #include "log.hpp"
 #include "material.hpp"
+#include "scene.hpp"
 // clang-format on
 
 int const screen_width = 1024;
@@ -47,13 +48,6 @@ inline double random_double() {
   return distribution(generator);
 }
 
-void render_scene(ren::Shader &shader, std::vector<ren::Object> const &world) {
-  shader.use();
-  for (auto const &obj : world) {
-    shader.set("model", obj.model());
-    obj.draw();
-  }
-}
 void toggle_debug(ren::Window &window, ImGuiIO &io) {
   auto const io_flags = ImGuiConfigFlags_NoMouse;
   if (!debug) {
@@ -89,12 +83,11 @@ int main() {
   auto cam = ren::Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.f, 0.f, 0.f),
                          glm::vec3(0.0f, 1.0f, 0.0f), screen_aspect);
 
-  std::vector<ren::Object> world{};
-  world.push_back(ren::create_plane());
+  ren::Scene scene{};
+  scene.add_object(ren::create_plane());
   for (size_t i = 0; i < 10; i++) {
-    world.push_back(ren::create_sphere());
+    scene.add_object(ren::create_sphere());
   }
-
   auto solid_shader = ren::Shader(ren_directory / "shaders/solid_color.vert",
                                   ren_directory / "shaders/solid_color.frag");
   assert(solid_shader.success());
@@ -130,14 +123,15 @@ int main() {
 
   auto material = std::make_shared<ren::Material>();
   material->diffuse = glm::vec3(0.2f, 0.5f, 0.1f);
-  world[0].set_model(plane_model);
-  for (size_t i = 1; i < world.size(); i++) {
+
+  scene.object_at(0)->set_model(plane_model);
+  for (size_t i = 1; i < scene.size(); i++) {
     auto x = (random_double() * 2 - 1) * 5;
     auto y = (random_double() * 2 - 1) * 5;
     auto z = (random_double() * 2 - 1) * 5;
     auto cube_model = glm::translate(glm::mat4(1), glm::vec3(x, y, z));
 
-    world[i].set_model(cube_model);
+    scene.object_at(i)->set_model(cube_model);
   }
   //  RT ---------------------
   int const DATA_SIZE = screen_width * screen_height * channel_count;
@@ -238,10 +232,10 @@ int main() {
                     }});
   keymap->set_bind(
       {GLFW_KEY_F1, [&window, &io]() { toggle_debug(window, io); }});
-  keymap->set_bind({GLFW_KEY_R, [&world, &image_data, &cam]() {
-                      //					  render_scene_rt(world,
-                      // cam, image_data);
-                    }});
+  // keymap->set_bind({GLFW_KEY_R, [&world, &image_data, &cam]() {
+  //					  render_scene_rt(world,
+  // cam, image_data);
+  //                   }});
   window.set_keymap(keymap);
 
   while (!should_close) {
@@ -298,7 +292,7 @@ int main() {
                        shadow_transforms[i]);
     depth_shader.set("far_plane", far_plane);
     depth_shader.set("light_pos", light_pos);
-    render_scene(depth_shader, world);
+    scene.render(depth_shader);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // 2. render scene as normal
@@ -322,7 +316,7 @@ int main() {
     shadow_shader.set<GLuint>("depth_map", 1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, depth_cubemap);
-    render_scene(shadow_shader, world);
+    scene.render(shadow_shader);
     solid_shader.use();
     solid_shader.set<glm::mat4>("projection", proj);
     solid_shader.set<glm::mat4>("view", view);

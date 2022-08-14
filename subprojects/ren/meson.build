@@ -12,6 +12,7 @@ ren_sources = [
   'src/object.cpp',
   'src/resource_manager.cpp',
   'src/log.cpp',
+  'src/scene.cpp',
 
   'libs/imgui/imgui.cpp',
   'libs/imgui/imgui_draw.cpp',
