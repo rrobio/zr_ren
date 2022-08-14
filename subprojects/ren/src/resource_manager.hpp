@@ -1,12 +1,13 @@
 #pragma once
 
-#include <string>
+
+#include <filesystem>
 
 namespace ren {
 
 class Image final {
 public:
-  Image(std::string const &path);
+  Image(std::filesystem::path const &path);
   ~Image();
 
   auto *data() { return m_data; }
@@ -23,7 +24,7 @@ private:
 };
 
 class ResourceManager final {
-  static auto load_image(std::string const &path);
+  static auto load_image(std::filesystem::path const &path);
 };
 
 using rm = ResourceManager;
