@@ -152,7 +152,7 @@ int main() {
 
   auto const speed = 0.05f;
   auto keymap = std::make_shared<ren::Keymap>();
-  keymap->set_bind({GLFW_KEY_ESCAPE, []() { should_close = true; }});
+  keymap->set_bind({GLFW_KEY_ESCAPE, [&window]() { window.set_should_close(true); }});
   keymap->set_bind({GLFW_KEY_W, [&cam, speed]() {
                       cam.move(glm::vec3(0.f, 0.f, 1.f), speed);
                     }});
@@ -181,7 +181,7 @@ int main() {
 
   auto smrenderer = ren::ShadowMappingRenderer(ren_directory, shadow_width, shadow_height);
 
-  while (!should_close) {
+  while (!window.should_close()) {
     glClearColor(0.3f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
