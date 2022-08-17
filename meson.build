@@ -3,7 +3,7 @@ project('vr', ['cpp', 'c'],
     meson_version: '>= 0.59.0',
   default_options: [ 'warning_level=2',
                      'werror=false',
-                     'cpp_std=gnu++2a',
+                     'cpp_std=c++17',
                    ],
 )
 
