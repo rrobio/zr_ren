@@ -1,3 +1,6 @@
 build/
+subprojects/ren/.cache/
+subprojects/rt/.cache/
+compile_commands.json
 imgui.ini
 render.png
