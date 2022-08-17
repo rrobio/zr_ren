@@ -28,7 +28,6 @@ public:
          std::filesystem::path const &fragment_path,
          std::filesystem::path const &geometry_path = {});
   Shader &operator=(Shader &&other) {
-    std::cout << "ass operator\n";
     ID = other.ID;
     m_success = other.m_success;
     return *this;

@@ -33,13 +33,13 @@
 
 int const screen_width = 1024;
 int const screen_height = 768;
-int const channel_count = 4;
+//int const channel_count = 4;
 float const screen_aspect =
     static_cast<float>(screen_width) / static_cast<float>(screen_height);
 int const shadow_width = 1440;
 int const shadow_height = 1440;
-float const shadow_aspect =
-    static_cast<float>(shadow_width) / static_cast<float>(shadow_height);
+// float const shadow_aspect =
+//     static_cast<float>(shadow_width) / static_cast<float>(shadow_height);
 
 bool should_close = false;
 bool debug = false;
@@ -65,6 +65,7 @@ void toggle_debug(ren::Window &window, ImGuiIO &io) {
 
 auto get_root_directory() -> std::filesystem::path {
   auto path = std::filesystem::canonical("/proc/self/exe");
+
   do {
     path = path.parent_path();
   } while (!path.parent_path().string().ends_with("/zr"));
@@ -192,9 +193,9 @@ int main() {
     auto light_model = glm::translate(glm::mat4(1.f), light_pos);
 
     light_sphere.set_model(light_model);
-    auto proj =
-        glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f);
-    auto view = cam.view();
+    // auto proj =
+    //     glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f);
+    // auto view = cam.view();
 
     // solid_shader.set("projection", proj);
     // solid_shader.set("view", view);
