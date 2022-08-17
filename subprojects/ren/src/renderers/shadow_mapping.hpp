@@ -2,24 +2,25 @@
 
 #include "../renderer.hpp"
 
-#include <vector>
 #include <filesystem>
+#include <vector>
 
 // clang-format off
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 // clang-format on
 
-
 #include "../shader.hpp"
 
 namespace ren {
 
-class ShadowMappingRenderer: public Renderer {
+class ShadowMappingRenderer : public Renderer {
 public:
-  ShadowMappingRenderer(std::filesystem::path root_dir, int const a_shadow_width, int const a_shadow_height);
+  ShadowMappingRenderer(std::filesystem::path root_dir,
+                        int const a_shadow_width, int const a_shadow_height);
   ~ShadowMappingRenderer() = default;
-  void render(const Scene &, double ticks, glm::vec3 light_pos) override;
+  void render(const Scene &, double ticks) override;
+
 private:
   Shader m_solid_shader;
   Shader m_depth_shader;

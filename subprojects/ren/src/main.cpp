@@ -33,7 +33,7 @@
 
 int const screen_width = 1024;
 int const screen_height = 768;
-//int const channel_count = 4;
+// int const channel_count = 4;
 float const screen_aspect =
     static_cast<float>(screen_width) / static_cast<float>(screen_height);
 int const shadow_width = 1440;
@@ -96,8 +96,6 @@ int main() {
   auto no_tex_img = ren::Image(ren_directory / "res/tex/no-tex.png");
   auto no_tex = ren::Texture(no_tex_img);
 
-  auto light_pos = glm::vec3(-2.f, 9.f, -1.f);
-
   ImGui::CreateContext();
   auto &io = ImGui::GetIO();
 
@@ -152,7 +150,8 @@ int main() {
 
   auto const speed = 0.05f;
   auto keymap = std::make_shared<ren::Keymap>();
-  keymap->set_bind({GLFW_KEY_ESCAPE, [&window]() { window.set_should_close(true); }});
+  keymap->set_bind(
+      {GLFW_KEY_ESCAPE, [&window]() { window.set_should_close(true); }});
   keymap->set_bind({GLFW_KEY_W, [&cam, speed]() {
                       cam.move(glm::vec3(0.f, 0.f, 1.f), speed);
                     }});
@@ -179,7 +178,17 @@ int main() {
   //                   }});
   window.set_keymap(keymap);
 
-  auto smrenderer = ren::ShadowMappingRenderer(ren_directory, shadow_width, shadow_height);
+  auto smrenderer =
+      ren::ShadowMappingRenderer(ren_directory, shadow_width, shadow_height);
+
+  ren::Scene::Transformations transformations{
+      1024,
+      768,
+      static_cast<float>(screen_width) / static_cast<float>(screen_height),
+      glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f),
+      cam.pos(),
+      cam.view(),
+  };
 
   while (!window.should_close()) {
     glClearColor(0.3f, 0.2f, 0.3f, 1.0f);
@@ -187,20 +196,23 @@ int main() {
 
     auto ticks = glfwGetTime();
 
-    light_pos = glm::vec3(glm::sin(ticks) * 3, 10.f, glm::cos(ticks) * 3);
+    auto const light_pos =
+        glm::vec3(glm::sin(ticks) * 3, 10.f, glm::cos(ticks) * 3);
 
     auto light_model = glm::translate(glm::mat4(1.f), light_pos);
 
-    light_sphere.set_model(light_model);
+    scene.light_at(0)->set_model(light_model);
     // auto proj =
     //     glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f);
     // auto view = cam.view();
-
+    transformations.view = cam.view();
+    scene.set_transformations(transformations);
+    // scene.set_lights({light_sphere});
     // solid_shader.set("projection", proj);
     // solid_shader.set("view", view);
     // render_scene(solid_shader, world);
 
-    smrenderer.render(scene, ticks, light_pos);
+    smrenderer.render(scene, ticks);
 
     // solid_shader.use();
     // solid_shader.set<glm::mat4>("projection", proj);

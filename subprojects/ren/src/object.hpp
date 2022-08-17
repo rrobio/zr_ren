@@ -20,6 +20,7 @@ public:
   Object(Object &&o) noexcept
       : m_mesh(std::move(o.m_mesh)), m_material(o.m_material),
         m_model(o.m_model) {}
+  Object(Object &o) = delete;
   Object(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
     m_mesh = Mesh::construct(vertices, indices);
   }

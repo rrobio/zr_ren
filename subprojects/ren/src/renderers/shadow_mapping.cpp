@@ -1,7 +1,7 @@
 #include "shadow_mapping.hpp"
 
-#include "../scene.hpp"
 #include "../camera.hpp"
+#include "../scene.hpp"
 
 namespace ren {
 ShadowMappingRenderer::ShadowMappingRenderer(std::filesystem::path root_dir,
@@ -16,7 +16,7 @@ ShadowMappingRenderer::ShadowMappingRenderer(std::filesystem::path root_dir,
                                root_dir / "shaders/point_shadow_depth.geom");
   assert(m_depth_shader.success());
   m_shadow_shader = ren::Shader(root_dir / "shaders/shadows.vert",
-                                     root_dir / "shaders/shadows.frag");
+                                root_dir / "shaders/shadows.frag");
   assert(m_shadow_shader.success());
 
   glEnable(GL_DEPTH_TEST);
@@ -71,8 +71,12 @@ ShadowMappingRenderer::ShadowMappingRenderer(std::filesystem::path root_dir,
                                   glm::vec3(0.0f, -1.0f, 0.0f)));
 }
 
-void ShadowMappingRenderer::render(const Scene &scene, double ticks,
-                                   glm::vec3 light_pos) {
+void ShadowMappingRenderer::render(const Scene &scene, double ticks) {
+  auto trans = scene.transformations();
+
+  auto const &light = scene.lights()[0];
+  auto const light_pos =
+      glm::vec3(light.model()[3]); // get the translation vector
   m_shadow_transforms[0] =
       (m_shadow_proj * glm::lookAt(light_pos,
                                    light_pos + glm::vec3(1.0f, 0.0f, 0.0f),
@@ -111,38 +115,35 @@ void ShadowMappingRenderer::render(const Scene &scene, double ticks,
   m_depth_shader.set("light_pos", light_pos);
   scene.render(m_depth_shader);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  /////////// TODO: Izbacit
-  int const screen_width = 1024;
-  int const screen_height = 768;
-  float const screen_aspect =
-      static_cast<float>(screen_width) / static_cast<float>(screen_height);
-  auto proj = glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f);
-  auto cam = ren::Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.f, 0.f, 0.f),
-                         glm::vec3(0.0f, 1.0f, 0.0f), screen_aspect);
-  auto view = cam.view();
-  //////////
 
   // 2. render scene as normal
   // -------------------------
-  glViewport(0, 0, screen_width, screen_height);
+  glViewport(0, 0, trans.screen_width, trans.screen_height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_shadow_shader.use();
-  m_shadow_shader.set("projection", proj);
-  m_shadow_shader.set("view", view);
+  m_shadow_shader.set("projection", trans.projection);
+  m_shadow_shader.set("view", trans.view);
   // set lighting uniforms
   m_shadow_shader.set("light.position", light_pos);
-  m_shadow_shader.set("view_pos", cam.pos());
+  m_shadow_shader.set("view_pos", trans.camera_position);
   // shadow_shader.set<int>("shadows", true); // enable/disable shadows by
   // pressing 'SPACE'
   m_shadow_shader.set("far_plane", far_plane);
 
   m_shadow_shader.set<GLuint>("diffuse_texture", 0);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, 1);//no_tex.id);
+  glBindTexture(GL_TEXTURE_2D, 1); // no_tex.id);
 
   m_shadow_shader.set<GLuint>("depth_map", 1);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_depth_cubemap);
   scene.render(m_shadow_shader);
+
+  m_solid_shader.use();
+  m_solid_shader.set<glm::mat4>("projection", trans.projection);
+  m_solid_shader.set<glm::mat4>("view", trans.view);
+  m_solid_shader.set<glm::mat4>("model", light.model());
+  m_solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
+  scene.lights().front().draw();
 }
 } // namespace ren
