@@ -76,8 +76,8 @@ auto get_root_directory() -> std::filesystem::path {
 
 int main() {
   // auto current_working_directory = std::filesystem::current_path();
-  auto const root_directory = get_root_directory();
-  auto const ren_directory = root_directory / "subprojects/ren";
+  auto const ren_directory = get_root_directory();
+  // auto const ren_directory = root_directory / "subprojects/ren";
 
   auto window = ren::Window("ren", screen_width, screen_height, false);
   window.set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
