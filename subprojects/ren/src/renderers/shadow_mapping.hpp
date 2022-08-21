@@ -14,7 +14,7 @@
 
 namespace ren {
 
-class ShadowMappingRenderer : public Renderer {
+class ShadowMappingRenderer final : public Renderer {
 public:
   ShadowMappingRenderer(std::filesystem::path root_dir,
                         int const a_shadow_width, int const a_shadow_height);

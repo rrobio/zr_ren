@@ -28,6 +28,7 @@
 #include "material.hpp"
 #include "scene.hpp"
 
+#include "renderers/solid.hpp"
 #include "renderers/shadow_mapping.hpp"
 // clang-format on
 
@@ -181,6 +182,8 @@ int main() {
   auto smrenderer =
       ren::ShadowMappingRenderer(ren_directory, shadow_width, shadow_height);
 
+  auto solidrenderer = ren::SolidRenderer(ren_directory);
+
   ren::Scene::Transformations transformations{
       1024,
       768,
@@ -212,8 +215,8 @@ int main() {
     // solid_shader.set("view", view);
     // render_scene(solid_shader, world);
 
-    smrenderer.render(scene, ticks);
-
+    // smrenderer.render(scene, ticks);
+    solidrenderer.render(scene, ticks);
     // solid_shader.use();
     // solid_shader.set<glm::mat4>("projection", proj);
     // solid_shader.set<glm::mat4>("view", view);

@@ -13,6 +13,7 @@ ren_sources = [
   'src/resource_manager.cpp',
   'src/log.cpp',
   'src/scene.cpp',
+  'src/renderers/solid.cpp',
   'src/renderers/shadow_mapping.cpp',
 
   'libs/imgui/imgui.cpp',

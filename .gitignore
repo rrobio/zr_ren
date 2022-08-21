@@ -1,4 +1,5 @@
 build/
+.cache/
 subprojects/ren/.cache/
 subprojects/rt/.cache/
 compile_commands.json
