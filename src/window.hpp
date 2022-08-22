@@ -1,7 +1,9 @@
 #pragma once
 
-#include "GLFW/glfw3.h"
+// clang-format: off
 #include "glad/glad.h"
+#include "GLFW/glfw3.h"
+// clang-format: on
 
 #include <cassert>
 #include <functional>
@@ -67,14 +69,13 @@ public:
 
   auto get_ptr() { return m_window; }
 
-  void set_keymap(std::shared_ptr<Keymap> map) { m_keymap = map; }
+  void set_keymap(Keymap map) { m_keymap = map; }
   void exec_keymap() {
-    // assert(m_keymap == nullptr);
-
-    for (auto const &[key, bind] : m_keymap->map()) {
-      if (get_key_state(key) == GLFW_PRESS) {
-        bind.callback();
-      }
+    for (auto &index : m_keymap.bound()) {
+      auto &bind = m_keymap.map().at(index);
+      auto const state = get_key_state(index);
+      bind.trigger(state);
+      bind.update(state);
     }
   }
   std::tuple<int, int> size() {
@@ -87,6 +88,6 @@ private:
   GLFWwindow *m_window{nullptr};
 
   bool m_success{false};
-  std::shared_ptr<Keymap> m_keymap;
+  Keymap m_keymap;
 };
 } // namespace ren

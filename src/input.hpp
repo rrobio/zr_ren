@@ -11,38 +11,36 @@
 namespace ren {
 
 struct Bind {
-  enum class Action {
-    press,
-    release,
-    hold,
-  };
-
   Bind() = default;
   Bind(int k, std::function<void()> c) : key(k), callback(c) {}
-  Bind(int k, Action a, std::function<void()> c)
-      : key(k), action(a), callback(c) {}
+  Bind(int k, int a, std::function<void()> c)
+      : key(k), activation(a), callback(c) {}
 
+  void update(int state) { previous_state = state; }
+  void trigger(int state) const {
+    if (activation == GLFW_PRESS && state == GLFW_PRESS)
+      callback();
+    if (activation == GLFW_RELEASE && previous_state == GLFW_PRESS &&
+        state == GLFW_RELEASE)
+      callback();
+  }
   int key{};
-  bool prev_s{false}, cur_s{false};
-  Action action{Action::press};
+  int previous_state{GLFW_RELEASE};
+  int activation{GLFW_PRESS};
   std::function<void()> callback{};
 };
 
 class Keymap {
 public:
   void set_bind(Bind b) {
-    m_bound[b.key] = true;
+    m_bound.push_back(b.key);
     m_map[b.key] = b;
   }
-  void exec_bind(int key) {
-    if (m_bound[key]) {
-      m_map[key].callback();
-    }
-  }
-  auto const &map() { return m_map; }
+  auto &map() { return m_map; }
+  auto const &bound() { return m_bound; }
 
 private:
-  std::map<int, Bind> m_map;
-  std::array<bool, GLFW_KEY_LAST + 1> m_bound{false};
+  std::array<Bind, GLFW_KEY_LAST + 1> m_map;
+  std::vector<int> m_bound{};
 };
 } // namespace ren

@@ -150,29 +150,29 @@ int main() {
   // \RT ---------------------
 
   auto const speed = 0.05f;
-  auto keymap = std::make_shared<ren::Keymap>();
-  keymap->set_bind(
+  auto keymap = ren::Keymap{};
+  keymap.set_bind(
       {GLFW_KEY_ESCAPE, [&window]() { window.set_should_close(true); }});
-  keymap->set_bind({GLFW_KEY_W, [&cam, speed]() {
+  keymap.set_bind({GLFW_KEY_W, [&cam, speed]() {
                       cam.move(glm::vec3(0.f, 0.f, 1.f), speed);
                     }});
-  keymap->set_bind({GLFW_KEY_A, [&cam, speed]() {
+  keymap.set_bind({GLFW_KEY_A, [&cam, speed]() {
                       cam.move(glm::vec3(-1.f, 0.f, 0.f), speed);
                     }});
-  keymap->set_bind({GLFW_KEY_S, [&cam, speed]() {
+  keymap.set_bind({GLFW_KEY_S, [&cam, speed]() {
                       cam.move(glm::vec3(0.f, 0.f, -1.f), speed);
                     }});
-  keymap->set_bind({GLFW_KEY_D, [&cam, speed]() {
+  keymap.set_bind({GLFW_KEY_D, [&cam, speed]() {
                       cam.move(glm::vec3(1.f, 0.f, 0.f), speed);
                     }});
-  keymap->set_bind({GLFW_KEY_E, [&cam, speed]() {
+  keymap.set_bind({GLFW_KEY_E, [&cam, speed]() {
                       cam.move(glm::vec3(0.f, 1.f, 0.f), speed);
                     }});
-  keymap->set_bind({GLFW_KEY_Q, [&cam, speed]() {
+  keymap.set_bind({GLFW_KEY_Q, [&cam, speed]() {
                       cam.move(glm::vec3(0.f, -1.f, 0.f), speed);
                     }});
-  keymap->set_bind(
-      {GLFW_KEY_F1, [&window, &io]() { toggle_debug(window, io); }});
+  keymap.set_bind(
+      {GLFW_KEY_F1, GLFW_RELEASE, [&window, &io]() { toggle_debug(window, io); }});
   // keymap->set_bind({GLFW_KEY_R, [&world, &image_data, &cam]() {
   //					  render_scene_rt(world,
   // cam, image_data);
