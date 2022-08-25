@@ -1,15 +1,18 @@
 #pragma once
 
+#include <memory>
+
 #include "../../util.hpp"
 #include "ray.hpp"
-#include "rtweekend.hpp"
+
+namespace ren {
 
 class material;
 
 struct hit_record {
   point3 p;
   vec3 normal;
-  shared_ptr<material> mat_ptr;
+  std::shared_ptr<material> mat_ptr;
   double t;
   bool front_face;
 
@@ -21,6 +24,8 @@ struct hit_record {
 
 class hittable {
 public:
+  virtual ~hittable() = default;
   virtual bool hit(ray const &r, double t_min, double t_max,
                    hit_record &rec) const = 0;
 };
+} // namespace ren

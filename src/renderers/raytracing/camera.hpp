@@ -1,5 +1,9 @@
 #pragma once
 
+#include "../../util.hpp"
+#include "ray.hpp"
+
+namespace ren {
 
 class camera {
 public:
@@ -32,3 +36,5 @@ private:
   vec3 horizontal;
   vec3 vertical;
 };
+
+} // namespace ren

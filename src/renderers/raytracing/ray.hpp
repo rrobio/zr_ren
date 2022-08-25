@@ -2,6 +2,8 @@
 
 #include "vec3.hpp"
 
+namespace ren {
+
 class ray {
 public:
   ray() {}
@@ -17,3 +19,5 @@ public:
   point3 orig;
   vec3 dir;
 };
+
+} // namespace ren

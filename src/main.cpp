@@ -29,14 +29,17 @@
 #include "scene.hpp"
 #include "util.hpp"
 
-#include "renderers/solid.hpp"
+// #include "renderers/solid.hpp"
 #include "renderers/shadow_mapping.hpp"
 #include "renderers/material.hpp"
+#include "renderers/raytracing.hpp"
 // clang-format on
 
 enum RenderIndex {
+  // solid = 0,
   simple_shadow_mapping = 0,
   material,
+  raytracing,
 };
 
 int const screen_width = 1024;
@@ -63,6 +66,16 @@ void toggle_debug(ren::Window &window, ImGuiIO &io) {
     io.ConfigFlags |= io_flags;
     debug = false;
   }
+}
+
+auto create_random_material() -> ren::Material {
+  ren::Material mat{};
+  mat.ambient = glm::vec3(random_double(), random_double(), random_double());
+  mat.diffuse = glm::vec3(random_double(), random_double(), random_double());
+  mat.specular = glm::vec3(random_double(), random_double(), random_double());
+  mat.shininess = random_double() * 32.f;
+
+  return mat;
 }
 
 auto get_root_directory() -> std::filesystem::path {
@@ -109,14 +122,21 @@ int main() {
   auto plane_model = glm::scale(glm::mat4(1.0f), glm::vec3(15.f, 1.f, 15.f));
   plane_model = glm::translate(plane_model, glm::vec3(0.f, -5.f, 0.f));
 
-  auto light_sphere = ren::create_sphere();
+  auto light_object = ren::create_sphere();
 
   // auto world_model = glm::scale(glm::mat4(1), glm::vec3(30.f, 30.f, 30.f));
 
-  auto material = std::make_shared<ren::Material>();
-  material->diffuse = glm::vec3(0.2f, 0.5f, 0.1f);
+  auto plane_material = std::make_shared<ren::Material>();
+  plane_material->ambient = glm::vec3(1.0f, 0.5f, 0.31f);
+  plane_material->diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+  plane_material->specular = glm::vec3(0.5f, 0.5f, 0.5f);
+  plane_material->shininess = 32.f;
+  auto material = std::make_shared<ren::Material>(create_random_material());
+
+  scene.light_at(0)->set_material(material);
 
   scene.object_at(0)->set_model(plane_model);
+  scene.object_at(0)->set_material(plane_material);
   for (size_t i = 1; i < scene.size(); i++) {
     auto x = (random_double() * 2 - 1) * 5;
     auto y = (random_double() * 2 - 1) * 5;
@@ -124,8 +144,21 @@ int main() {
     auto cube_model = glm::translate(glm::mat4(1), glm::vec3(x, y, z));
 
     scene.object_at(i)->set_model(cube_model);
+    scene.object_at(i)->set_material(material);
   }
   //  RT ---------------------
+  GLuint rt_framebuffer = 0;
+  glGenFramebuffers(1, &rt_framebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, rt_framebuffer);
+
+  GLuint rt_texture;
+  glGenTextures(1, &rt_texture);
+
+  glBindTexture(GL_TEXTURE_2D, rt_texture);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screen_width, screen_height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, 0);
+
   // int const DATA_SIZE = screen_width * screen_height * channel_count;
 
   // GLuint pbo;
@@ -180,12 +213,13 @@ int main() {
   //                   }});
   window.set_keymap(keymap);
 
-
-  auto solidrenderer = ren::SolidRenderer(ren_directory);
   auto smrenderer = std::make_shared<ren::ShadowMappingRenderer>(
       ren_directory, shadow_width, shadow_height);
+  // auto solid_renderer = std::make_shared<ren::SolidRenderer>(ren_directory);
   auto materialrenderer =
       std::make_shared<ren::MaterialRenderer>(ren_directory);
+  auto raytracing_renderer =
+      std::make_shared<ren::RayTracingRenderer>(ren_directory);
 
   ren::Renderer::Transformations transformations{
       1024,
@@ -217,11 +251,17 @@ int main() {
     if (current_render_index != new_render_index) {
       current_render_index = new_render_index;
       switch (current_render_index) {
+      // case RenderIndex::solid:
+      //   current_renderer = solid_renderer;
+      //   break;
       case RenderIndex::simple_shadow_mapping:
         current_renderer = smrenderer;
         break;
       case RenderIndex::material:
         current_renderer = materialrenderer;
+        break;
+      case RenderIndex::raytracing:
+        current_renderer = raytracing_renderer;
         break;
       }
     }

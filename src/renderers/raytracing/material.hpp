@@ -6,6 +6,8 @@
 #include "ray.hpp"
 #include "vec3.hpp"
 
+namespace ren {
+
 struct hit_record;
 
 double schlick(double cosine, double ref_idx) {
@@ -16,6 +18,7 @@ double schlick(double cosine, double ref_idx) {
 
 class material {
 public:
+  virtual ~material() = default;
   virtual bool scatter(ray const &r_in, hit_record const &rec,
                        color &attenuation, ray &scattered) const = 0;
 };
@@ -83,3 +86,5 @@ public:
 
   double ref_idx;
 };
+
+} // namespace ren

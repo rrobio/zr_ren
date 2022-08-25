@@ -16,6 +16,11 @@ ren_sources = [
   'src/renderers/solid.cpp',
   'src/renderers/shadow_mapping.cpp',
   'src/renderers/material.cpp',
+  'src/renderers/raytracing.cpp',
+
+  'src/renderers/raytracing/color.cpp',
+  'src/renderers/raytracing/sphere.cpp',
+  'src/renderers/raytracing/hittable_list.cpp',
 
   'libs/imgui/imgui.cpp',
   'libs/imgui/imgui_draw.cpp',
