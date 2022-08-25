@@ -229,7 +229,8 @@ int main() {
     current_renderer->render(scene, transformations, ticks);
     window.poll_events();
     window.exec_keymap();
-    cam.rotate_offset(window.get_cursor_pos());
+    if (!debug)
+      cam.rotate_offset(window.get_cursor_pos());
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -238,8 +239,19 @@ int main() {
     auto frametime = glfwGetTime() - ticks;
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
     ImGui::Text("frametime: %f", frametime);
+
     ren::Log::the().draw("Log");
 
+    ImGui::Begin("Renderer");
+    const char *items[] = {"Simple Shadow Mapping", "Material", "RayTracing"};
+    static int combo_index = static_cast<int>(current_render_index);
+    ImGui::Combo("Renderer", &combo_index, items, IM_ARRAYSIZE(items));
+    new_render_index = static_cast<RenderIndex>(combo_index);
+    // ren::Log::the().add_log("current %d\n", new_render_index);
+    ImGui::Separator();
+    current_renderer->draw_dialog();
+
+    ImGui::End();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     window.swap_buffers();
