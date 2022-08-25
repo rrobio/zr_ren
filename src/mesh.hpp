@@ -62,7 +62,7 @@ public:
 
   void bind_vao() const { glBindVertexArray(VAO); }
 
-  std::size_t n_indices() { return m_indices.size(); }
+  std::size_t n_indices() const { return m_indices.size(); }
 
 private:
   void setup() {
