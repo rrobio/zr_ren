@@ -19,7 +19,8 @@ public:
   ShadowMappingRenderer(std::filesystem::path root_dir,
                         int const a_shadow_width, int const a_shadow_height);
   ~ShadowMappingRenderer() = default;
-  void render(const Scene &, double ticks) override;
+  void render(const Scene &, Transformations const &, double ticks) override;
+  void draw_dialog() override { ImGui::Text("test"); }
 
 private:
   Shader m_solid_shader;

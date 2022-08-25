@@ -18,8 +18,9 @@ SolidRenderer::SolidRenderer(std::filesystem::path root_dir) {
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
-void SolidRenderer::render(const Scene &scene, double ticks) {
-  auto trans = scene.transformations();
+void SolidRenderer::render(const Scene &scene, Transformations const &trans,
+                           double ticks) {
+  // auto trans = scene.transformations();
 
   auto const &light = scene.lights()[0];
 

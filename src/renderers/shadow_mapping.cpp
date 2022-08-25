@@ -71,8 +71,8 @@ ShadowMappingRenderer::ShadowMappingRenderer(std::filesystem::path root_dir,
                                   glm::vec3(0.0f, -1.0f, 0.0f)));
 }
 
-void ShadowMappingRenderer::render(const Scene &scene, double ticks) {
-  auto trans = scene.transformations();
+void ShadowMappingRenderer::render(const Scene &scene,
+                                   Transformations const &trans, double ticks) {
 
   auto const &light = scene.lights()[0];
   auto const light_pos =
