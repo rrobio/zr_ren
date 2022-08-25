@@ -1,8 +1,8 @@
 #pragma once
 
 // clang-format: off
-#include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "glad/glad.h"
 // clang-format: on
 
 #include <cassert>
