@@ -3,7 +3,7 @@
 #include <iostream>
 #include <tuple>
 
-#include "rtweekend.hpp"
+#include "../../util.hpp"
 #include "vec3.hpp"
 
 void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {

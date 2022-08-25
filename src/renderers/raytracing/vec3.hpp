@@ -3,6 +3,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "../../util.hpp"
+
 using std::sqrt;
 
 class vec3 {

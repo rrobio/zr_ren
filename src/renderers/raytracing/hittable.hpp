@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../util.hpp"
 #include "ray.hpp"
 #include "rtweekend.hpp"
 

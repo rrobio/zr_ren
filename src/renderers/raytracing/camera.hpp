@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rtweekend.hpp"
 
 class camera {
 public:
