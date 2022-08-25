@@ -31,7 +31,13 @@
 
 #include "renderers/solid.hpp"
 #include "renderers/shadow_mapping.hpp"
+#include "renderers/material.hpp"
 // clang-format on
+
+enum RenderIndex {
+  simple_shadow_mapping = 0,
+  material,
+};
 
 int const screen_width = 1024;
 int const screen_height = 768;
@@ -178,6 +184,8 @@ int main() {
   auto solidrenderer = ren::SolidRenderer(ren_directory);
   auto smrenderer = std::make_shared<ren::ShadowMappingRenderer>(
       ren_directory, shadow_width, shadow_height);
+  auto materialrenderer =
+      std::make_shared<ren::MaterialRenderer>(ren_directory);
 
   ren::Renderer::Transformations transformations{
       1024,
@@ -211,6 +219,9 @@ int main() {
       switch (current_render_index) {
       case RenderIndex::simple_shadow_mapping:
         current_renderer = smrenderer;
+        break;
+      case RenderIndex::material:
+        current_renderer = materialrenderer;
         break;
       }
     }
