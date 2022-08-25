@@ -27,6 +27,7 @@
 #include "log.hpp"
 #include "material.hpp"
 #include "scene.hpp"
+#include "util.hpp"
 
 #include "renderers/solid.hpp"
 #include "renderers/shadow_mapping.hpp"
@@ -44,12 +45,6 @@ int const shadow_height = 1440;
 
 bool should_close = false;
 bool debug = false;
-
-inline double random_double() {
-  static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-  static std::mt19937 generator;
-  return distribution(generator);
-}
 
 void toggle_debug(ren::Window &window, ImGuiIO &io) {
   auto const io_flags = ImGuiConfigFlags_NoMouse;
