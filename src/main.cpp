@@ -174,12 +174,12 @@ int main() {
   //                   }});
   window.set_keymap(keymap);
 
-  auto smrenderer =
-      ren::ShadowMappingRenderer(ren_directory, shadow_width, shadow_height);
 
   auto solidrenderer = ren::SolidRenderer(ren_directory);
+  auto smrenderer = std::make_shared<ren::ShadowMappingRenderer>(
+      ren_directory, shadow_width, shadow_height);
 
-  ren::Scene::Transformations transformations{
+  ren::Renderer::Transformations transformations{
       1024,
       768,
       static_cast<float>(screen_width) / static_cast<float>(screen_height),
@@ -188,6 +188,10 @@ int main() {
       cam.view(),
   };
 
+  std::shared_ptr<ren::Renderer> current_renderer = smrenderer;
+
+  RenderIndex current_render_index = RenderIndex::simple_shadow_mapping;
+  auto new_render_index = current_render_index;
   while (!window.should_close()) {
     glClearColor(0.3f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -200,25 +204,18 @@ int main() {
     auto light_model = glm::translate(glm::mat4(1.f), light_pos);
 
     scene.light_at(0)->set_model(light_model);
-    // auto proj =
-    //     glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f);
-    // auto view = cam.view();
     transformations.view = cam.view();
-    scene.set_transformations(transformations);
-    // scene.set_lights({light_sphere});
-    // solid_shader.set("projection", proj);
-    // solid_shader.set("view", view);
-    // render_scene(solid_shader, world);
 
-    // smrenderer.render(scene, ticks);
-    solidrenderer.render(scene, ticks);
-    // solid_shader.use();
-    // solid_shader.set<glm::mat4>("projection", proj);
-    // solid_shader.set<glm::mat4>("view", view);
-    // solid_shader.set<glm::mat4>("model", light_model);
-    // solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
-    // light_sphere.draw();
+    if (current_render_index != new_render_index) {
+      current_render_index = new_render_index;
+      switch (current_render_index) {
+      case RenderIndex::simple_shadow_mapping:
+        current_renderer = smrenderer;
+        break;
+      }
+    }
 
+    current_renderer->render(scene, transformations, ticks);
     window.poll_events();
     window.exec_keymap();
     cam.rotate_offset(window.get_cursor_pos());
