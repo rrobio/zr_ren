@@ -33,15 +33,20 @@ private:
 
   hittable_list m_world{};
 
-  size_t m_n_threads{1};
+  std::size_t m_n_threads{2};
   std::vector<std::thread> m_threads;
   std::vector<std::future<std::vector<uint8_t>>> m_futures;
 
   double const aspect_ratio = 16.0 / 9.0;
-  size_t const image_width = 400;
-  size_t const image_height = static_cast<int>(image_width / aspect_ratio);
-  size_t const samples_per_pixel = 100;
+  std::size_t const m_image_width = 400;
+  std::size_t const m_image_height =
+      255; // static_cast<std::size_t>(m_image_width / aspect_ratio);
+  std::size_t const m_channels = 3;
+  std::size_t const m_len = m_image_width * m_image_height * m_channels;
+  std::size_t const samples_per_pixel = 100;
   int const max_depth = 50;
+
+  std::vector<uint8_t> pixels{};
 
   // auto R = cos(pi / 4);
 
@@ -49,6 +54,8 @@ private:
   bool m_has_render{false};
 
   void render_frame();
+  bool is_render_done();
+  void create_image_data();
 };
 
 } // namespace ren

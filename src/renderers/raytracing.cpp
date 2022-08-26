@@ -43,6 +43,12 @@ RayTracingRenderer::RayTracingRenderer(std::filesystem::path root_dir) {
 void RayTracingRenderer::render(const Scene &scene,
                                 Transformations const &trans, double ticks) {
 
+  if (m_rendering) {
+    if (is_render_done()) {
+      create_image_data();
+      m_rendering = false;
+    }
+  }
   // auto trans = scene.transformations();
 
   auto const &light = scene.lights()[0];
@@ -89,6 +95,9 @@ void RayTracingRenderer::draw_dialog() {
   if (ImGui::Button("Render Frame")) {
     render_frame();
   }
+  if (m_has_render) {
+    ImGui::Text("rendered\n");
+  }
 }
 
 color ray_color(ray const &r, hittable const &world, int depth) {
@@ -116,104 +125,90 @@ color ray_color(ray const &r, hittable const &world, int depth) {
 
 void RayTracingRenderer::render_frame() {
   Log::the().add_log("Starting Raytracing\n");
-  Log::the().add_log("Width=%zu, Height=%zu\n", image_width, image_height);
+  Log::the().add_log("Width=%zu, Height=%zu\n", m_image_width, m_image_height);
   Log::the().add_log("Threads=%zu\n", m_n_threads);
 
   camera cam(point3(-2, 2, 1), point3(0, 0, -1), vec3(0, 1, 0), 20,
              aspect_ratio);
 
-  std::vector<std::vector<color>> colors(image_width,
-                                         std::vector<color>(image_height));
-  size_t const channels = 3;
-  size_t const len = image_width * image_height * channels;
-  auto *pixels = new uint8_t[len];
-
-  // std::packaged_task<std::vector<uint8_t>()> task([]{return
-  // std::vector{1};});
-
-  auto render_thread = [this, &cam, &colors](size_t start, size_t stop) {
-    for (size_t j = start; j < stop; ++j) {
-      for (size_t i = 0; i < image_width; ++i) {
-        color pixel_color(0, 0, 0);
-        for (size_t s = 0; s < samples_per_pixel; ++s) {
-          auto u = (i + random_double()) / (image_width - 1);
-          auto v = (j + random_double()) / (image_height - 1);
-          ray r = cam.get_ray(u, v);
-          pixel_color += ray_color(r, m_world, max_depth);
-        }
-        colors.at(i).at(j) = pixel_color;
-      }
-    }
-  };
-
   struct RenderInfo {
-    size_t image_height;
-    size_t image_width;
-    size_t samples_per_pixel;
+    std::size_t image_height;
+    std::size_t image_width;
+    std::size_t samples_per_pixel;
     int max_depth;
   };
-  // RenderInfo ri { image_width, image_height, samples_per_pixel, max_depth };
-  // auto render_task = [](hittable_list const &world, camera const &cam,
-  //                       RenderInfo const &ri, size_t start, size_t stop) {
-  //   std::vector<uint8_t> ret;
-  //   ret.resize((stop-start)*ri.image_width*3);
-  //   for (size_t j = start; j < stop; ++j) {
-  //     for (size_t i = 0; i < ri.image_width; ++i) {
-  //       color pixel_color(0, 0, 0);
-  //       for (size_t s = 0; s < ri.samples_per_pixel; ++s) {
-  //         auto u = (i + random_double()) / (ri.image_width - 1);
-  //         auto v = (j + random_double()) / (ri.image_height - 1);
-  //         ray r = cam.get_ray(u, v);
-  //         pixel_color += ray_color(r, world, ri.max_depth);
-  //       }
-  //       // ret[j*i] = pixel_color;
-  //     }
-  //   }
-  //   return ret;
-  // };
+  RenderInfo ri{m_image_height, m_image_width, samples_per_pixel, max_depth};
+  auto render_task = [](hittable_list const world, camera const cam,
+                        RenderInfo const ri, std::size_t start,
+                        std::size_t stop) {
+    std::vector<uint8_t> ret;
+    std::printf("%zu, %zu\n", start, stop);
+    std::size_t const len = (stop - start) * ri.image_width * 3;
+    ret.resize(len);
+    for (std::size_t j = start; j < stop; ++j) {
+      for (std::size_t i = 0; i < ri.image_width; ++i) {
+        color pixel_color(0, 0, 0);
+        for (std::size_t s = 0; s < ri.samples_per_pixel; ++s) {
+          auto u = (i + random_double()) / (ri.image_width - 1);
+          auto v = (j + random_double()) / (ri.image_height - 1);
+          ray r = cam.get_ray(u, v);
+          pixel_color += ray_color(r, world, ri.max_depth);
+        }
+        std::size_t const index = ri.image_width * j + (i * 3);
+        ret.at(index + 0) = pixel_color.x();
+        ret.at(index + 1) = pixel_color.y();
+        ret.at(index + 2) = pixel_color.z();
+      }
+    }
+    return ret;
+  };
 
-  // m_threads.clear();
-  // size_t step = image_height / m_n_threads;
-  // size_t cur_step = 0;
-  // for (size_t i = 0; i < m_n_threads; i++) {
-  //   auto start = cur_step;
-  //   auto stop = cur_step + step;
-  //   if (stop > image_height)
-  //     stop = image_height;
-  //   m_threads.push_back(std::thread(render_thread, start, stop));
-  //   cur_step += step;
-  // }
-
-  m_threads.clear();
-  size_t step = image_height / m_n_threads;
-  size_t cur_step = 0;
-  for (size_t i = 0; i < m_n_threads; i++) {
+  m_futures.clear();
+  std::size_t step = m_image_height / m_n_threads;
+  std::size_t cur_step = 0;
+  for (std::size_t i = 0; i < m_n_threads; i++) {
     auto start = cur_step;
     auto stop = cur_step + step;
-    if (stop > image_height)
-      stop = image_height;
-    m_threads.push_back(std::thread(render_thread, start, stop));
+    if (stop > m_image_height) {
+      stop = m_image_height;
+    }
+    // if it dosen't divide evenly get the rest
+    if (i == m_n_threads - 1 && stop <= m_image_height) {
+      stop = m_image_height;
+    }
+
+    m_futures.emplace_back(std::async(std::launch::async, render_task, m_world,
+                                      cam, ri, start, stop));
     cur_step += step;
   }
 
   m_rendering = true;
 
-  for (auto &t : m_threads)
-    t.join();
+  // stbi_write_png("./render.png", m_image_width, m_image_height, channels,
+  //                pixels.data(), m_image_width * channels);
+}
 
-  size_t index = 0;
-  for (size_t i = 0; i < image_height; i++) {
-    for (size_t j = 0; j < image_width; j++) {
-      auto [x, y, z] = get_pixel_tuple(colors.at(j).at(i), samples_per_pixel);
-      pixels[index++] = x;
-      pixels[index++] = y;
-      pixels[index++] = z;
+bool RayTracingRenderer::is_render_done() {
+  using namespace std::chrono_literals;
+  for (auto &f : m_futures) {
+    auto status = f.wait_for(0ms);
+    if (status != std::future_status::ready) {
+      return false;
     }
   }
 
-  stbi_write_png("./render.png", image_width, image_height, channels, pixels,
-                 image_width * channels);
+  m_has_render = true;
+  return true;
+}
 
-  delete[] pixels;
+void RayTracingRenderer::create_image_data() {
+  pixels.clear();
+  // pixels.reserve(m_len);
+  auto done = is_render_done();
+  for (auto &f : m_futures) {
+    auto const app = f.get();
+    pixels.insert(pixels.end(), app.begin(), app.end());
+  }
+  m_futures.clear();
 }
 } // namespace ren
