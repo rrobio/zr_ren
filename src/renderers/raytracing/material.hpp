@@ -2,7 +2,7 @@
 
 #include "../../util.hpp"
 #include "color.hpp"
-#include "hittable.hpp"
+#include "../../hittable.hpp"
 #include "../../ray.hpp"
 #include "../../vec3.hpp"
 

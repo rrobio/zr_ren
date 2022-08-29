@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hittable.hpp"
+#include "../../hittable.hpp"
 #include "../../vec3.hpp"
 
 namespace ren {

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "hittable.hpp"
+#include "../../hittable.hpp"
 
 namespace ren {
 

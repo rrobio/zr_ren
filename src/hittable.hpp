@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "../../util.hpp"
-#include "../../ray.hpp"
+#include "util.hpp"
+#include "ray.hpp"
 
 namespace ren {
 
