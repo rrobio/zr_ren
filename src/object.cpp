@@ -3,59 +3,39 @@
 // TODO: move objects to separate .cpp files
 namespace ren {
 
-Object create_icospehere(const int subdivisions) {
-  constexpr float ico_x = 0.525731f;
-  constexpr float ico_z = 0.850651f;
-  constexpr float ico_n = 0.f;
-
-  constexpr std::array<glm::vec3, 12> ico_vertices{
-      glm::vec3{ico_n, -ico_x, ico_z},  glm::vec3{ico_z, ico_n, ico_x},
-      glm::vec3{ico_z, ico_n, -ico_x},  glm::vec3{-ico_z, ico_n, -ico_x},
-      glm::vec3{-ico_z, ico_n, ico_x},  glm::vec3{-ico_x, ico_z, ico_n},
-      glm::vec3{ico_x, ico_z, ico_n},   glm::vec3{ico_x, -ico_z, ico_n},
-      glm::vec3{-ico_x, -ico_z, ico_n}, glm::vec3{ico_n, -ico_x, -ico_z},
-      glm::vec3{ico_n, ico_x, -ico_z},  glm::vec3{ico_n, ico_x, ico_z}};
-
-  // clang-format off
-	const std::vector<GLuint> ico_indices{
-		1, 2, 6,
-		1, 7, 2,
-		3, 4, 5,
-		4, 3, 8,
-		6, 5, 11,
-
-		5, 6, 10,
-		9, 10, 2,
-		10, 9, 3,
-		7, 8, 9,
-		8, 7, 0,
-
-		11, 0, 1,
-		0, 11, 4,
-		6, 2, 10,
-		1, 6, 11,
-		3, 5, 10,
-
-		5, 4, 11,
-		2, 7, 9,
-		7, 1, 0,
-		3, 9, 8,
-		4, 8, 0
-	};
-  // clang-format on
-  const size_t index_count = ico_indices.size() * (1 << subdivisions * 2);
-  const size_t vertex_cound =
-      ico_vertices.size() + ((index_count - ico_indices.size()) / 3);
-
-  std::vector<Vertex> verts;
-  for (size_t i = 0; i < ico_vertices.size(); i++) {
-    Vertex v;
-    v.pos = ico_vertices[i];
-    verts.push_back(v);
+bool sphere_hit(Object const& obj, ray const &r, float t_min, float t_max,
+                 hit_record &rec) {
+  auto center = obj.translation();
+	auto radius = obj.scale().x;
+  vec3 oc = r.origin() - center;
+  auto a = glm::length2(r.direction());
+  auto half_b = dot(oc, r.direction());
+  auto c = glm::length2(oc) - radius * radius;
+  auto discriminant = half_b * half_b - a * c;
+  if (discriminant > 0) {
+    auto root = sqrt(discriminant);
+    auto temp = (-half_b - root) / a;
+    if (temp < t_max && temp > t_min) {
+      rec.t = temp;
+      rec.p = r.at(rec.t);
+      vec3 outward_normal = (rec.p - center) / radius;
+      rec.set_face_normal(r, outward_normal);
+      rec.mat_ptr = obj.material();
+      return true;
+    }
+    temp = (-half_b + root) / a;
+    if (temp < t_max && temp > t_min) {
+      rec.t = temp;
+      rec.p = r.at(rec.t);
+      vec3 outward_normal = (rec.p - center) / radius;
+      rec.set_face_normal(r, outward_normal);
+      rec.mat_ptr = obj.material();
+      return true;
+    }
   }
-
-  return Object(verts, ico_indices);
+  return false;
 }
+
 
 Object create_sphere() {
   std::vector<Vertex> verts;
@@ -127,7 +107,22 @@ Object create_sphere() {
       }
     }
   }
-  return Object(verts, indices);
+	auto obj = Object(verts, indices);
+	obj.set_type(Object::Type::sphere);
+  return obj;
+}
+
+Object create_sphere(glm::vec3 cen, float r, std::shared_ptr<Material> mat) {
+	auto obj = create_sphere();
+	
+	obj.set_translation(cen);
+	obj.set_scale(vec3(r));
+	// obj.set_model(mod);
+	
+	obj.set_material(mat);
+	obj.set_hit_function(sphere_hit);
+	
+	return obj;	
 }
 
 Object create_cube() {
