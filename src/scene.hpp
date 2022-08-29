@@ -21,7 +21,6 @@ public:
   }
   // Scene(std::vector<Object> l) : m_objects(l) {}
 
-  void render(Shader &) const;
   auto *object_at(size_t index) { return &m_objects.at(index); }
   auto &objects() const { return m_objects; }
   auto &lights() const { return m_lights; }

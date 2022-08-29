@@ -113,7 +113,11 @@ void ShadowMappingRenderer::render(const Scene &scene,
                        m_shadow_transforms[i]);
   m_depth_shader.set("far_plane", far_plane);
   m_depth_shader.set("light_pos", light_pos);
-  scene.render(m_depth_shader);
+  m_depth_shader.use();
+  for (auto const &obj : scene.objects()) {
+    m_depth_shader.set("model", obj.model());
+    obj.draw();
+  }
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   // 2. render scene as normal
@@ -137,7 +141,12 @@ void ShadowMappingRenderer::render(const Scene &scene,
   m_shadow_shader.set<GLuint>("depth_map", 1);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_depth_cubemap);
-  scene.render(m_shadow_shader);
+
+  m_shadow_shader.use();
+  for (auto const &obj : scene.objects()) {
+    m_shadow_shader.set("model", obj.model());
+    obj.draw();
+  }
 
   m_solid_shader.use();
   m_solid_shader.set<glm::mat4>("projection", trans.projection);
