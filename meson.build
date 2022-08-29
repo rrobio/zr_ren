@@ -9,6 +9,7 @@ ren_sources = [
 
   'src/main.cpp',
   'src/shader.cpp',
+  'src/material.cpp',
   'src/object.cpp',
   'src/resource_manager.cpp',
   'src/log.cpp',
