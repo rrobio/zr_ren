@@ -20,7 +20,6 @@ ren_sources = [
   'src/renderers/raytracing.cpp',
 
   'src/renderers/raytracing/color.cpp',
-  'src/renderers/raytracing/sphere.cpp',
   'src/renderers/raytracing/hittable_list.cpp',
 
   'libs/imgui/imgui.cpp',
