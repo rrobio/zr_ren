@@ -6,18 +6,18 @@
 #include "ray.hpp"
 
 namespace ren {
+  class Material;
 
-class material;
 
 struct hit_record {
   point3 p;
   vec3 normal;
-  std::shared_ptr<material> mat_ptr;
+  std::shared_ptr<Material> mat_ptr;
   float t;
   bool front_face;
 
   inline void set_face_normal(ray const &r, vec3 const &outward_normal) {
-    front_face = dot(r.direction(), outward_normal) < 0;
+    front_face = glm::dot(r.direction(), outward_normal) < 0;
     normal = front_face ? outward_normal : -outward_normal;
   }
 };
@@ -29,3 +29,4 @@ public:
                    hit_record &rec) const = 0;
 };
 } // namespace ren
+
