@@ -28,7 +28,6 @@ public:
   auto *light_at(size_t index) { return &m_lights.at(index); }
   auto size() const { return m_objects.size(); }
 
-
 private:
   std::vector<Object> m_objects;
   std::array<Object, 1> m_lights{}; // currently limited only to one light per

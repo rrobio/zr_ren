@@ -146,42 +146,6 @@ int main() {
     scene.object_at(i)->set_model(cube_model);
     scene.object_at(i)->set_material(material);
   }
-  //  RT ---------------------
-  GLuint rt_framebuffer = 0;
-  glGenFramebuffers(1, &rt_framebuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, rt_framebuffer);
-
-  GLuint rt_texture;
-  glGenTextures(1, &rt_texture);
-
-  glBindTexture(GL_TEXTURE_2D, rt_texture);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screen_width, screen_height, 0, GL_RGB,
-               GL_UNSIGNED_BYTE, 0);
-
-  // int const DATA_SIZE = screen_width * screen_height * channel_count;
-
-  // GLuint pbo;
-  // glGenBuffers(1, &pbo);
-  // glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-  // glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-  // void* mapped_buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-  // glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
-  // GLubyte *image_data = new GLubyte[DATA_SIZE];
-
-  // GLuint rt_tex;
-  // glGenTextures(1, &rt_tex);
-  // glBindTexture(GL_TEXTURE_2D, rt_tex);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, screen_width, screen_height, 0,
-  //              GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)image_data);
-  // glBindTexture(GL_TEXTURE_2D, 0);
-
-  // \RT ---------------------
 
   auto const speed = 0.05f;
   auto keymap = ren::Keymap{};
