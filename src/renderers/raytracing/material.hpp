@@ -3,8 +3,8 @@
 #include "../../util.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
-#include "ray.hpp"
-#include "vec3.hpp"
+#include "../../ray.hpp"
+#include "../../vec3.hpp"
 
 namespace ren {
 
@@ -41,11 +41,11 @@ public:
 
 class metal : public material {
 public:
-  metal(color const &a, double f) : albedo(a), fuzz(f) {}
+  metal(color const &a, float f) : albedo(a), fuzz(f) {}
 
   virtual bool scatter(ray const &r_in, hit_record const &rec,
                        color &attenuation, ray &scattered) const override {
-    vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
+    vec3 reflected = reflect(glm::normalize(r_in.direction()), rec.normal);
     scattered = ray(rec.p, reflected + fuzz * random_in_unit_sphere());
     attenuation = albedo;
     return (dot(scattered.direction(), rec.normal) > 0);
@@ -53,7 +53,7 @@ public:
 
 public:
   color albedo;
-  double fuzz;
+  float fuzz;
 };
 
 class dielectric : public material {
@@ -65,7 +65,7 @@ public:
     attenuation = color(1.0, 1.0, 1.0);
     double etai_over_etat = rec.front_face ? (1.0 / ref_idx) : ref_idx;
 
-    vec3 unit_direction = unit_vector(r_in.direction());
+    vec3 unit_direction = glm::normalize(r_in.direction());
     double cos_theta = fmin(dot(-unit_direction, rec.normal), 1.0);
     double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
     if (etai_over_etat * sin_theta > 1.0) {
@@ -74,7 +74,7 @@ public:
       return true;
     }
     double reflect_prob = schlick(cos_theta, etai_over_etat);
-    if (random_double() < reflect_prob) {
+    if (random_float() < reflect_prob) {
       vec3 reflected = reflect(unit_direction, rec.normal);
       scattered = ray(rec.p, reflected);
       return true;

@@ -70,10 +70,10 @@ void toggle_debug(ren::Window &window, ImGuiIO &io) {
 
 auto create_random_material() -> ren::Material {
   ren::Material mat{};
-  mat.ambient = glm::vec3(random_double(), random_double(), random_double());
-  mat.diffuse = glm::vec3(random_double(), random_double(), random_double());
-  mat.specular = glm::vec3(random_double(), random_double(), random_double());
-  mat.shininess = random_double() * 32.f;
+  mat.ambient = glm::vec3(random_float(), random_float(), random_float());
+  mat.diffuse = glm::vec3(random_float(), random_float(), random_float());
+  mat.specular = glm::vec3(random_float(), random_float(), random_float());
+  mat.shininess = random_float() * 32.f;
 
   return mat;
 }
@@ -138,9 +138,9 @@ int main() {
   scene.object_at(0)->set_model(plane_model);
   scene.object_at(0)->set_material(plane_material);
   for (size_t i = 1; i < scene.size(); i++) {
-    auto x = (random_double() * 2 - 1) * 5;
-    auto y = (random_double() * 2 - 1) * 5;
-    auto z = (random_double() * 2 - 1) * 5;
+    auto x = (random_float() * 2 - 1) * 5;
+    auto y = (random_float() * 2 - 1) * 5;
+    auto z = (random_float() * 2 - 1) * 5;
     auto cube_model = glm::translate(glm::mat4(1), glm::vec3(x, y, z));
 
     scene.object_at(i)->set_model(cube_model);

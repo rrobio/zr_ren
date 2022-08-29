@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "../../util.hpp"
-#include "ray.hpp"
+#include "../../ray.hpp"
 
 namespace ren {
 
@@ -13,7 +13,7 @@ struct hit_record {
   point3 p;
   vec3 normal;
   std::shared_ptr<material> mat_ptr;
-  double t;
+  float t;
   bool front_face;
 
   inline void set_face_normal(ray const &r, vec3 const &outward_normal) {
@@ -25,7 +25,7 @@ struct hit_record {
 class hittable {
 public:
   virtual ~hittable() = default;
-  virtual bool hit(ray const &r, double t_min, double t_max,
+  virtual bool hit(ray const &r, float t_min, float t_max,
                    hit_record &rec) const = 0;
 };
 } // namespace ren

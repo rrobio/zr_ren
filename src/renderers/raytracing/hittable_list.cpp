@@ -1,6 +1,6 @@
 #include "hittable_list.hpp"
 namespace ren {
-bool hittable_list::hit(ray const &r, double t_min, double t_max,
+bool hittable_list::hit(ray const &r, float t_min, float t_max,
                         hit_record &rec) const {
   hit_record temp_rec;
   bool hit_anything = false;

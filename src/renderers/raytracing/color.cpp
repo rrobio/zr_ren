@@ -3,9 +3,9 @@
 namespace ren {
 
 void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {
-  auto r = pixel_color.x();
-  auto g = pixel_color.y();
-  auto b = pixel_color.z();
+  auto r = pixel_color.x;
+  auto g = pixel_color.y;
+  auto b = pixel_color.z;
 
   // Divide the color by the number of samples.
   auto scale = 1.0 / samples_per_pixel;
@@ -21,9 +21,9 @@ void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {
 
 auto get_pixel_tuple(color pixel_color, int samples_per_pixel)
     -> std::tuple<uint8_t, uint8_t, uint8_t> {
-  auto r = pixel_color.x();
-  auto g = pixel_color.y();
-  auto b = pixel_color.z();
+  auto r = pixel_color.x;
+  auto g = pixel_color.y;
+  auto b = pixel_color.z;
 
   // Divide the color by the number of samples.
   auto scale = 1.0 / samples_per_pixel;

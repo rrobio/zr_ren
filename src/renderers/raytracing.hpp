@@ -11,6 +11,7 @@
 // clang-format on
 
 #include "../shader.hpp"
+#include "../texture.hpp"
 
 #include "raytracing/hittable_list.hpp"
 
@@ -33,7 +34,7 @@ private:
 
   hittable_list m_world{};
 
-  std::size_t m_n_threads{2};
+  int m_n_threads{2};
   std::vector<std::thread> m_threads;
   std::vector<std::future<std::vector<uint8_t>>> m_futures;
 
@@ -43,10 +44,11 @@ private:
       255; // static_cast<std::size_t>(m_image_width / aspect_ratio);
   std::size_t const m_channels = 3;
   std::size_t const m_len = m_image_width * m_image_height * m_channels;
-  std::size_t const samples_per_pixel = 100;
-  int const max_depth = 50;
+  int samples_per_pixel = 100;
+  int max_depth = 50;
 
   std::vector<uint8_t> pixels{};
+  ren::Texture m_texture{};
 
   // auto R = cos(pi / 4);
 
@@ -56,6 +58,7 @@ private:
   void render_frame();
   bool is_render_done();
   void create_image_data();
+  void save_to_file();
 };
 
 } // namespace ren
