@@ -3,10 +3,10 @@
 // TODO: move objects to separate .cpp files
 namespace ren {
 
-bool sphere_hit(Object const& obj, ray const &r, float t_min, float t_max,
-                 hit_record &rec) {
+bool sphere_hit(Object const &obj, ray const &r, float t_min, float t_max,
+                hit_record &rec) {
   auto center = obj.translation();
-	auto radius = obj.scale().x;
+  auto radius = obj.scale().x;
   vec3 oc = r.origin() - center;
   auto a = glm::length2(r.direction());
   auto half_b = dot(oc, r.direction());
@@ -35,7 +35,6 @@ bool sphere_hit(Object const& obj, ray const &r, float t_min, float t_max,
   }
   return false;
 }
-
 
 Object create_sphere() {
   std::vector<Vertex> verts;
@@ -107,22 +106,22 @@ Object create_sphere() {
       }
     }
   }
-	auto obj = Object(verts, indices);
-	obj.set_type(Object::Type::sphere);
+  auto obj = Object(verts, indices);
+  obj.set_type(Object::Type::sphere);
   return obj;
 }
 
 Object create_sphere(glm::vec3 cen, float r, std::shared_ptr<Material> mat) {
-	auto obj = create_sphere();
-	
-	obj.set_translation(cen);
-	obj.set_scale(vec3(r));
-	// obj.set_model(mod);
-	
-	obj.set_material(mat);
-	obj.set_hit_function(sphere_hit);
-	
-	return obj;	
+  auto obj = create_sphere();
+
+  obj.set_translation(cen);
+  obj.set_scale(vec3(r));
+  // obj.set_model(mod);
+
+  obj.set_material(mat);
+  obj.set_hit_function(sphere_hit);
+
+  return obj;
 }
 
 Object create_cube() {

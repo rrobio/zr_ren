@@ -8,18 +8,17 @@
 
 #include "hittable.hpp"
 
-
 namespace ren {
 float schlick(float cosine, float ref_idx);
 
-class Scatter{
+class Scatter {
 public:
   virtual ~Scatter() = default;
   virtual bool scatter(ray const &r_in, hit_record const &rec,
                        color &attenuation, ray &scattered) const = 0;
 };
 
-class lambertian : public Scatter{
+class lambertian : public Scatter {
 public:
   lambertian(color const &a) : albedo(a) {}
 

@@ -45,7 +45,7 @@ public:
     m_translation = o.m_translation;
     m_scale = o.m_scale;
     m_type = o.m_type;
-    
+
     return *this;
   }
 

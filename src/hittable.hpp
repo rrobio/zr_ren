@@ -2,12 +2,11 @@
 
 #include <memory>
 
-#include "util.hpp"
 #include "ray.hpp"
+#include "util.hpp"
 
 namespace ren {
-  class Material;
-
+class Material;
 
 struct hit_record {
   point3 p;
@@ -29,4 +28,3 @@ public:
                    hit_record &rec) const = 0;
 };
 } // namespace ren
-

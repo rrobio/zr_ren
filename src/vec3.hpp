@@ -56,4 +56,4 @@ vec3 refract(vec3 const &uv, vec3 const &n, float etai_over_etat) {
   return r_out_perp + r_out_parallel;
 }
 
-} // namespace ren
+} // namespace
