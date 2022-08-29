@@ -15,10 +15,11 @@ struct Texture {
   GLuint height{0};
   bool m_is_valid{false};
 
-  Texture() {
-    glGenTextures(1, &id);
-    m_is_valid = true;
-  }
+  Texture() = default;
+  // Texture() {
+  // glGenTextures(1, &id);
+  // m_is_valid = true;
+  // }
   Texture(Image &img) {
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
@@ -31,11 +32,49 @@ struct Texture {
     width = img.width();
     m_is_valid = true;
   }
+  void generate_from_data(std::vector<uint8_t> const &data, size_t a_width,
+                          size_t a_heigth) {
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, a_width, a_heigth, 0, GL_RGB8,
+                 GL_UNSIGNED_BYTE, data.data());
+    // glGenerateMipmap(GL_TEXTURE_2D);
+
+    height = a_heigth;
+    width = a_width;
+    m_is_valid = true;
+  }
   ~Texture() {
     if (m_is_valid) {
       glDeleteTextures(1, &id);
     }
   }
+  void bind() const {
+    if (m_is_valid)
+      glBindTexture(GL_TEXTURE_2D, id);
+  }
+  // Texture &operator=(Texture &other) {
+  //   id = other.id;
+  //   width = other.width;
+  //   height = other.height;
+  //   m_is_valid = other.m_is_valid;
+  //   other.m_is_valid = false;
+  //   return *this;
+  // }
+  // Texture &operator=(Texture &&other) {
+  //   id = other.id;
+  //   width = other.width;
+  //   height = other.height;
+  //   m_is_valid = other.m_is_valid;
+  //   other.m_is_valid = false;
+  //   return *this;
+  // }
 };
 
 class TextureManager {
@@ -57,13 +96,13 @@ public:
   auto name(std::size_t id) const { return m_textures.at(id).id; }
 
   void bind(std::size_t id) const {
-    glBindTexture(GL_TEXTURE_2D, m_textures[id].id);
+    m_textures[id].bind();
     check_gl_error("bind");
   }
 
   void bind(std::size_t index, GLenum target) const {
     glActiveTexture(target);
-    glBindTexture(GL_TEXTURE_2D, m_textures[index].id);
+    m_textures[index].bind();
     check_gl_error("bind");
   }
 
