@@ -5,28 +5,29 @@
 #include "glm/glm.hpp"
 
 #include "log.hpp"
-//#include "ray.hpp"
+#include "ray.hpp"
+#include "vec3.hpp"
 
 namespace ren {
 
 class Camera {
 public:
-  Camera(glm::vec3 position, glm::vec3 lookat, glm::vec3 up,
-         float const screen_aspect)
-      : m_position(position), m_up(up), m_world_up(up) {
-    auto theta = glm::radians(90.f);
-    auto h = tan(theta / 2);
+  Camera(glm::vec3 look_from, glm::vec3 look_at, glm::vec3 vup, float vfov,
+         float const aspect_ratio)
+      : m_position(look_from), m_up(vup), m_world_up(vup) {
+    auto theta = glm::radians(vfov);
+    auto h = std::tan(theta / 2);
     float viewport_height = 2.0 * h;
-    float viewport_width = screen_aspect * viewport_height;
+    float viewport_width = aspect_ratio * viewport_height;
 
-    w = glm::normalize(position - lookat);
-    u = glm::normalize(cross(up, w));
-    v = glm::cross(w, u);
+    auto w = glm::normalize(look_from - look_at);
+    auto u = glm::normalize(cross(vup, w));
+    auto v = cross(w, u);
 
+    origin = look_from;
     horizontal = viewport_width * u;
     vertical = viewport_height * v;
-    lower_left_corner =
-        origin - (horizontal * (1.f / 2.f)) - (vertical * (1.f / 2.f));
+    lower_left_corner = origin - horizontal / 2.0f - vertical / 2.0f - w;
     update_vectors();
   }
 
@@ -34,6 +35,10 @@ public:
     return glm::lookAt(m_position, m_position + m_front, m_up);
   }
 
+  ray get_ray(float s, float t) const {
+    return ray(origin,
+               lower_left_corner + s * horizontal + t * vertical - origin);
+  }
   auto pos() const { return m_position; }
 
   void move(glm::vec3 const m, float const speed) {
@@ -87,11 +92,11 @@ private:
   double m_last_x{};
   double m_last_y{};
 
-  glm::vec3 origin;
-  glm::vec3 lower_left_corner;
-  glm::vec3 horizontal;
-  glm::vec3 vertical;
-  glm::vec3 u, v, w;
+  point3 origin;
+  point3 lower_left_corner;
+  vec3 horizontal;
+  vec3 vertical;
+  // vec3 u, v, w;
 
   void update_vectors() {
     glm::vec3 front;

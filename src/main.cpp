@@ -98,7 +98,7 @@ int main() {
   window.set_input_mode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
   auto cam = ren::Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.f, 0.f, 0.f),
-                         glm::vec3(0.0f, 1.0f, 0.0f), screen_aspect);
+                         glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, screen_aspect);
 
   ren::Scene scene{};
   scene.add_object(ren::create_plane());

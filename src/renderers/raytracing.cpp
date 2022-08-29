@@ -7,9 +7,9 @@
 
 #include "../util.hpp"
 
-#include "raytracing/camera.hpp"
-#include "raytracing/color.hpp"
+#include "../camera.hpp"
 #include "../material.hpp"
+#include "raytracing/color.hpp"
 // #include "raytracing/sphere.hpp"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
