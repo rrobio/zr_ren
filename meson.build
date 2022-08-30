@@ -11,6 +11,7 @@ ren_sources = [
   'src/shader.cpp',
   'src/material.cpp',
   'src/object.cpp',
+  'src/color.cpp',
   'src/resource_manager.cpp',
   'src/log.cpp',
   'src/scene.cpp',
@@ -18,8 +19,6 @@ ren_sources = [
   'src/renderers/shadow_mapping.cpp',
   'src/renderers/material.cpp',
   'src/renderers/raytracing.cpp',
-
-  'src/renderers/raytracing/color.cpp',
 
   'libs/imgui/imgui.cpp',
   'libs/imgui/imgui_draw.cpp',

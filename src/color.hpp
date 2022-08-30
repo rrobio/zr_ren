@@ -3,8 +3,8 @@
 #include <iostream>
 #include <tuple>
 
-#include "../../util.hpp"
-#include "../../vec3.hpp"
+#include "util.hpp"
+#include "vec3.hpp"
 
 namespace ren {
 
