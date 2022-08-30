@@ -13,7 +13,6 @@
 #include "../shader.hpp"
 #include "../texture.hpp"
 
-#include "raytracing/hittable_list.hpp"
 
 namespace ren {
 
@@ -31,8 +30,6 @@ private:
 
   Shader m_material_shader;
   Shader m_solid_shader;
-
-  hittable_list m_world{};
 
   int m_n_threads{2};
   std::vector<std::thread> m_threads;
