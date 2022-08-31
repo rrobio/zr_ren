@@ -1,7 +1,7 @@
 project('ren', 'cpp', 'c',
   default_options: [ 'warning_level=2',
                      'werror=false',
-                     'cpp_std=gnu++2a',
+                     'cpp_std=c++17',
                    ],)
 
 ren_sources = [
