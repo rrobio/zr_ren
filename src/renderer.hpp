@@ -2,10 +2,9 @@
 
 #include "glm/glm.hpp"
 #include "imgui.h"
+#include "scene.hpp"
 
 namespace ren {
-
-class Scene;
 
 class Renderer {
 public:
