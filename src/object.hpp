@@ -31,7 +31,8 @@ public:
   Object() = default;
   Object(Object &&o) noexcept
       : m_mesh(std::move(o.m_mesh)), m_material(o.m_material),
-        m_model(o.m_model) {}
+        m_model(o.m_model), m_translation(o.m_translation), m_scale(o.m_scale),
+        m_type(o.m_type), m_hit(o.m_hit) {}
   Object(Object &o) = delete;
   Object(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
     m_mesh = Mesh::construct(vertices, indices);
@@ -39,12 +40,12 @@ public:
   Object(std::vector<Vertex> vertices) { m_mesh = Mesh::construct(vertices); }
   Object &operator=(Object &&o) {
     m_mesh = std::move(o.m_mesh);
-    m_hit = o.m_hit;
     m_material = o.m_material;
     m_model = o.m_model;
     m_translation = o.m_translation;
     m_scale = o.m_scale;
     m_type = o.m_type;
+    m_hit = o.m_hit;
 
     return *this;
   }
@@ -78,7 +79,6 @@ private:
   std::unique_ptr<Mesh> m_mesh{};
   std::shared_ptr<Material> m_material{};
   glm::mat4 m_model{};
-  // glm::mat4 m_model{};
   vec3 m_translation;
   vec3 m_scale;
   Type m_type{Type::custom};
