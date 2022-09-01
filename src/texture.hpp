@@ -42,7 +42,7 @@ struct Texture {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, a_width, a_heigth, 0, GL_RGB8,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, a_width, a_heigth, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, data.data());
     // glGenerateMipmap(GL_TEXTURE_2D);
 
