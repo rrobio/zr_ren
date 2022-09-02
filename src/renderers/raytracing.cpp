@@ -127,8 +127,8 @@ struct RenderTaskArgs {
   size_t image_width;
   int samples_per_pixel;
   int max_depth;
-  size_t start;
-  size_t stop;
+  int start;
+  int stop;
 };
 
   int index = 0;
@@ -172,8 +172,8 @@ void RayTracingRenderer::render_frame(Scene const *scene) {
   std::size_t step = m_image_height / m_n_threads;
   std::size_t cur_step = 0;
   for (std::size_t i = 0; i < m_n_threads; i++) {
-    auto start = cur_step;
-    auto stop = cur_step + step;
+    int start = cur_step;
+    int stop = cur_step + step -1;
     if (stop >= m_image_height) {
       stop = m_image_height - 1;
     }
