@@ -62,7 +62,7 @@ private:
   bool m_rendering{false};
   bool m_has_render{false};
 
-  void render_frame(Scene*);
+  void render_frame(Scene const *);
   bool is_render_done();
   void create_image_data();
   void save_to_file();

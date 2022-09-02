@@ -77,7 +77,7 @@ void RayTracingRenderer::draw_dialog() {
   }
 }
 
-static bool hit_scene(ray const &r, Scene *world, int depth, hit_record &rec) {
+static bool hit_scene(ray const &r, Scene  const *world, int depth, hit_record &rec) {
 
   hit_record temp_rec;
   float t_min = 0.001;
@@ -98,7 +98,7 @@ static bool hit_scene(ray const &r, Scene *world, int depth, hit_record &rec) {
   return hit_anything;
 }
 
-static color ren_ray_color(ray const &r, Scene *world, int depth) {
+static color ren_ray_color(ray const &r, Scene const *world, int depth) {
   hit_record rec;
 
   if (depth <= 0)
@@ -131,9 +131,9 @@ struct RenderTaskArgs {
   size_t stop;
 };
 
-void ren_task(RenderTaskArgs ra, Scene *scene, Pixels *pixels) {
   int index = 0;
   int index_offset = ra.start * ra.image_width * 3;
+void ren_task(RenderTaskArgs ra, Scene const *scene, Pixels *pixels) {
   // for (int j = ra.stop; j >= ra.start; --j) {
   for (int j = ra.start; j <= ra.stop; j++) {
     for (int i = 0; i < ra.image_width; ++i) {
@@ -153,7 +153,7 @@ void ren_task(RenderTaskArgs ra, Scene *scene, Pixels *pixels) {
   }
 };
 
-void RayTracingRenderer::render_frame(Scene *scene) {
+void RayTracingRenderer::render_frame(Scene const *scene) {
   Log::the().add_log("Starting Raytracing\n");
   Log::the().add_log("Width=%zu, Height=%zu\n", m_image_width, m_image_height);
   Log::the().add_log("Threads=%d\n", m_n_threads);
@@ -184,7 +184,7 @@ void RayTracingRenderer::render_frame(Scene *scene) {
     RenderTaskArgs ra{
         a_camera,         m_image_height, m_image_width, m_samples_per_pixel,
         m_max_depth, start,          stop};
-    auto call = [this, i](RenderTaskArgs ra, Scene *s, Pixels *pixels) {
+    auto call = [this, i](RenderTaskArgs ra, Scene const *s, Pixels *pixels) {
       ren_task(ra, s, pixels);
       m_thread_finished.at(i) = true;
     };
