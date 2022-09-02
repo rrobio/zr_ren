@@ -85,8 +85,9 @@ static bool hit_scene(ray const &r, Scene *world, int depth, hit_record &rec) {
   bool hit_anything = false;
   auto closest_so_far = t_max;
   for (auto const &object : world->objects()) {
-    if (!object.hit())
-      return false;
+    if (!object.hit()) {
+      continue;
+    }
     if (object.hit()(object, r, t_min, closest_so_far, temp_rec)) { // malo
                                                                     // ruzno
       hit_anything = true;
