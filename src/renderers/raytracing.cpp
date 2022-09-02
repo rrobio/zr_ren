@@ -207,7 +207,12 @@ void RayTracingRenderer::thread_cleanup() {
 }
 
 void RayTracingRenderer::create_image_data() {
-  m_texture.generate_from_data(m_pixels, m_image_width, m_image_height);
+  // std::reverse(m_pixels.begin(), m_pixels.end());
+  if (m_texture.m_is_valid) {
+    m_texture.update_data(m_pixels, m_image_width, m_image_height);
+  } else {
+    m_texture.generate_from_data(m_pixels, m_image_width, m_image_height);
+  }
 }
 void RayTracingRenderer::save_to_file() {
   assert(m_has_render);

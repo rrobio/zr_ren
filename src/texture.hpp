@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glad/glad.h"
+#include <cassert>
 #include <string>
 #include <utility>
 #include <vector>
@@ -49,6 +50,12 @@ struct Texture {
     height = a_heigth;
     width = a_width;
     m_is_valid = true;
+  }
+  void update_data(std::vector<uint8_t> const &data, size_t a_width,
+                   size_t a_heigth) {
+    assert(m_is_valid);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, a_width, a_heigth, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, data.data());
   }
   ~Texture() {
     if (m_is_valid) {
