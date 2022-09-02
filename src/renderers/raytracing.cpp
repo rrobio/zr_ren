@@ -132,23 +132,31 @@ struct RenderTaskArgs {
 };
 
 void ren_task(RenderTaskArgs ra, Scene const *scene, Pixels *pixels) {
+  auto image_height = ra.image_height;
+  auto image_width = ra.image_width;
+  size_t const len = image_height * image_width * 3;
+  int samples_per_pixel = ra.samples_per_pixel;
+  int max_depth = ra.max_depth;
+  std::vector<uint8_t> apixels;
+  int index = ra.start * image_width * 3; 
+  // pixels.resize(len);
   // for (int j = ra.stop; j >= ra.start; --j) {
-  for (int j = ra.start; j <= ra.stop; j++) {
-    for (int i = 0; i < ra.image_width; ++i) {
+  for (int j = ra.start; j <= ra.stop ; ++j) {
+    for (int i = 0; i < image_width; ++i) {
       color pixel_color(0, 0, 0);
-      for (int s = 0; s < ra.samples_per_pixel; ++s) {
-        auto u = (i + random_float()) / (ra.image_width - 1);
-        auto v = (j + random_float()) / (ra.image_height - 1);
-        ray r = ra.cam.get_ray(u, v);
-
-        pixel_color += ren_ray_color(r, scene, ra.max_depth);
+      for (int s = 0; s < samples_per_pixel; ++s) {
+        auto u = (i + random_float()) / (image_width - 1);
+        auto v = (j + random_float()) / (image_height - 1);
+        ray r = ra.cam->get_ray(u, v);
+        pixel_color += ren_ray_color(r, scene, max_depth);
       }
-      auto [x, y, z] = get_pixel_tuple(pixel_color, ra.samples_per_pixel);
-      (*pixels).at(index_offset + index++) = x;
-      (*pixels).at(index_offset + index++) = y;
-      (*pixels).at(index_offset + index++) = z;
+      auto [x, y, z] = get_pixel_tuple(pixel_color, samples_per_pixel);
+      (*pixels).at(index++) = x;
+      (*pixels).at(index++) = y;
+      (*pixels).at(index++) = z;
     }
   }
+  return;
 };
 
 void RayTracingRenderer::render_frame(Scene const *scene) {
