@@ -131,8 +131,6 @@ struct RenderTaskArgs {
   int stop;
 };
 
-  int index = 0;
-  int index_offset = ra.start * ra.image_width * 3;
 void ren_task(RenderTaskArgs ra, Scene const *scene, Pixels *pixels) {
   // for (int j = ra.stop; j >= ra.start; --j) {
   for (int j = ra.start; j <= ra.stop; j++) {
