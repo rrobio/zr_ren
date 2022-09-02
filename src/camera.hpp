@@ -78,6 +78,34 @@ public:
   /// vertical
   ///- origin);
   ///	}
+  void update_rt_vectors() {
+    // glm::vec3 front;
+    // front.x = glm::cos(glm::radians(m_yaw)) * glm::cos(glm::radians(m_pitch));
+    // front.y = glm::sin(glm::radians(m_pitch));
+    // front.z = glm::sin(glm::radians(m_yaw)) * glm::cos(glm::radians(m_pitch));
+    // m_front = glm::normalize(front);
+
+    // m_right = glm::normalize(glm::cross(m_front, m_world_up));
+    // m_up = glm::normalize(glm::cross(m_right, m_front));
+    update_vectors();
+    auto theta = glm::radians(90.f);
+    auto h = std::tan(theta / 2);
+    float viewport_height = 2.0 * h;
+    float viewport_width = 16.f / 9.f * viewport_height;
+
+    auto look_from = m_position;
+    auto look_at = m_front;
+    auto vup = m_up;
+    
+    auto w = glm::normalize(look_from - look_at);
+    auto u = glm::normalize(cross(vup, w));
+    auto v = cross(w, u);
+
+    origin = look_from;
+    horizontal = viewport_width * u;
+    vertical = viewport_height * v;
+    lower_left_corner = origin - horizontal / 2.0f - vertical / 2.0f - w;
+  }
 
 private:
   float m_yaw{-90.0f};

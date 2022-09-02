@@ -42,6 +42,7 @@ void RayTracingRenderer::render(const Scene &scene,
                                 Transformations const &trans, double ticks) {
 
   assert(trans.cam);
+  if (!a_camera) a_camera = trans.cam;
   if (m_rendering) {
     if (is_render_done()) {
       create_image_data();
@@ -120,7 +121,7 @@ static color ren_ray_color(ray const &r, Scene *world, int depth) {
 }
 
 struct RenderTaskArgs {
-  Camera cam;
+  std::shared_ptr<Camera> cam;
   size_t image_height;
   size_t image_width;
   int samples_per_pixel;
@@ -156,8 +157,10 @@ void RayTracingRenderer::render_frame(Scene *scene) {
   Log::the().add_log("Width=%zu, Height=%zu\n", m_image_width, m_image_height);
   Log::the().add_log("Threads=%d\n", m_n_threads);
 
-  Camera cam(point3(-2, 2, 1), point3(0, 0, -1), vec3(0, 1, 0), 90,
-             aspect_ratio);
+  // Camera cam(point3(-2, 2, 1), point3(0, 0, -1), vec3(0, 1, 0), 90,
+  //            aspect_ratio);
+  assert(a_camera);
+  a_camera->update_rt_vectors();
 
   m_pixels.clear();
   m_pixels.resize(m_len);
@@ -178,7 +181,7 @@ void RayTracingRenderer::render_frame(Scene *scene) {
       stop = m_image_height - 1;
     }
     RenderTaskArgs ra{
-        cam,         m_image_height, m_image_width, m_samples_per_pixel,
+        a_camera,         m_image_height, m_image_width, m_samples_per_pixel,
         m_max_depth, start,          stop};
     auto call = [this, i](RenderTaskArgs ra, Scene *s, Pixels *pixels) {
       ren_task(ra, s, pixels);

@@ -58,6 +58,7 @@ private:
 
   // auto R = cos(pi / 4);
   Scene m_scene;
+  std::shared_ptr<Camera> a_camera;
 
   bool m_rendering{false};
   bool m_has_render{false};
