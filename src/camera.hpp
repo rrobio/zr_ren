@@ -71,22 +71,8 @@ public:
 
     this->rotate(xoffset, yoffset, 0.1f);
   }
-  ///	auto get_ray(float s, float t) const
-  ///	{
-  ///		return Ray(origin,
-  ///				   lower_left_corner + s * horizontal + t *
-  /// vertical
-  ///- origin);
-  ///	}
-  void update_rt_vectors() {
-    // glm::vec3 front;
-    // front.x = glm::cos(glm::radians(m_yaw)) * glm::cos(glm::radians(m_pitch));
-    // front.y = glm::sin(glm::radians(m_pitch));
-    // front.z = glm::sin(glm::radians(m_yaw)) * glm::cos(glm::radians(m_pitch));
-    // m_front = glm::normalize(front);
 
-    // m_right = glm::normalize(glm::cross(m_front, m_world_up));
-    // m_up = glm::normalize(glm::cross(m_right, m_front));
+  void update_rt_vectors() {
     update_vectors();
     auto theta = glm::radians(90.f);
     auto h = std::tan(theta / 2);
@@ -96,7 +82,7 @@ public:
     auto look_from = m_position;
     auto look_at = m_front;
     auto vup = m_up;
-    
+
     auto w = glm::normalize(look_from - look_at);
     auto u = glm::normalize(cross(vup, w));
     auto v = cross(w, u);
