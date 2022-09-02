@@ -2,9 +2,9 @@
 
 #include "../renderer.hpp"
 
+#include <array>
 #include <atomic>
 #include <thread>
-#include <array>
 
 // clang-format off
 #include "glad/glad.h"
@@ -22,9 +22,7 @@ using Pixels = std::vector<uint8_t>;
 class RayTracingRenderer final : public Renderer {
 public:
   RayTracingRenderer(std::filesystem::path root_dir);
-  ~RayTracingRenderer() {
-    thread_cleanup();
-  };
+  ~RayTracingRenderer() { thread_cleanup(); };
   void render(const Scene &, Transformations const &, double ticks) override;
   void draw_dialog() override;
 
@@ -39,7 +37,8 @@ private:
   std::array<std::atomic<bool>, 16> m_thread_finished{};
   bool threads_finished() {
     for (size_t i = 0; i < m_n_threads; ++i) {
-      if (!m_thread_finished.at(i)) return false;
+      if (!m_thread_finished.at(i))
+        return false;
     }
     return true;
   }
@@ -67,7 +66,7 @@ private:
   bool is_render_done();
   void create_image_data();
   void save_to_file();
-  void thread_cleanup(); 
+  void thread_cleanup();
 };
 
 } // namespace ren
