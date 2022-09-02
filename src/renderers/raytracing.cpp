@@ -77,7 +77,8 @@ void RayTracingRenderer::draw_dialog() {
   }
 }
 
-static bool hit_scene(ray const &r, Scene  const *world, int depth, hit_record &rec) {
+static bool hit_scene(ray const &r, Scene const *world, int depth,
+                      hit_record &rec) {
 
   hit_record temp_rec;
   float t_min = 0.001;
@@ -138,10 +139,10 @@ void ren_task(RenderTaskArgs ra, Scene const *scene, Pixels *pixels) {
   int samples_per_pixel = ra.samples_per_pixel;
   int max_depth = ra.max_depth;
   std::vector<uint8_t> apixels;
-  int index = ra.start * image_width * 3; 
+  int index = ra.start * image_width * 3;
   // pixels.resize(len);
   // for (int j = ra.stop; j >= ra.start; --j) {
-  for (int j = ra.start; j <= ra.stop ; ++j) {
+  for (int j = ra.start; j <= ra.stop; ++j) {
     for (int i = 0; i < image_width; ++i) {
       color pixel_color(0, 0, 0);
       for (int s = 0; s < samples_per_pixel; ++s) {
@@ -179,7 +180,7 @@ void RayTracingRenderer::render_frame(Scene const *scene) {
   std::size_t cur_step = 0;
   for (std::size_t i = 0; i < m_n_threads; i++) {
     int start = cur_step;
-    int stop = cur_step + step -1;
+    int stop = cur_step + step - 1;
     if (stop >= m_image_height) {
       stop = m_image_height - 1;
     }
@@ -188,7 +189,7 @@ void RayTracingRenderer::render_frame(Scene const *scene) {
       stop = m_image_height - 1;
     }
     RenderTaskArgs ra{
-        a_camera,         m_image_height, m_image_width, m_samples_per_pixel,
+        a_camera,    m_image_height, m_image_width, m_samples_per_pixel,
         m_max_depth, start,          stop};
     auto call = [this, i](RenderTaskArgs ra, Scene const *s, Pixels *pixels) {
       ren_task(ra, s, pixels);
