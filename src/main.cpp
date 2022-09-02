@@ -97,8 +97,8 @@ int main() {
   window.set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   window.set_input_mode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
-  auto cam = ren::Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.f, 0.f, 0.f),
-                         glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, screen_aspect);
+  auto cam = std::make_shared<ren::Camera>(ren::Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.f, 0.f, 0.f),
+                         glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, screen_aspect));
 
   ren::Scene scene{};
   scene.add_object(ren::create_plane());
@@ -152,22 +152,22 @@ int main() {
   keymap.set_bind(
       {GLFW_KEY_ESCAPE, [&window]() { window.set_should_close(true); }});
   keymap.set_bind({GLFW_KEY_W, [&cam, speed]() {
-                     cam.move(glm::vec3(0.f, 0.f, 1.f), speed);
+                     cam->move(glm::vec3(0.f, 0.f, 1.f), speed);
                    }});
   keymap.set_bind({GLFW_KEY_A, [&cam, speed]() {
-                     cam.move(glm::vec3(-1.f, 0.f, 0.f), speed);
+                     cam->move(glm::vec3(-1.f, 0.f, 0.f), speed);
                    }});
   keymap.set_bind({GLFW_KEY_S, [&cam, speed]() {
-                     cam.move(glm::vec3(0.f, 0.f, -1.f), speed);
+                     cam->move(glm::vec3(0.f, 0.f, -1.f), speed);
                    }});
   keymap.set_bind({GLFW_KEY_D, [&cam, speed]() {
-                     cam.move(glm::vec3(1.f, 0.f, 0.f), speed);
+                     cam->move(glm::vec3(1.f, 0.f, 0.f), speed);
                    }});
   keymap.set_bind({GLFW_KEY_E, [&cam, speed]() {
-                     cam.move(glm::vec3(0.f, 1.f, 0.f), speed);
+                     cam->move(glm::vec3(0.f, 1.f, 0.f), speed);
                    }});
   keymap.set_bind({GLFW_KEY_Q, [&cam, speed]() {
-                     cam.move(glm::vec3(0.f, -1.f, 0.f), speed);
+                     cam->move(glm::vec3(0.f, -1.f, 0.f), speed);
                    }});
   keymap.set_bind({GLFW_KEY_F1, GLFW_RELEASE,
                    [&window, &io]() { toggle_debug(window, io); }});
@@ -190,8 +190,7 @@ int main() {
       768,
       static_cast<float>(screen_width) / static_cast<float>(screen_height),
       glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f),
-      cam.pos(),
-      cam.view(),
+      cam,
   };
 
   std::shared_ptr<ren::Renderer> current_renderer = smrenderer;
@@ -210,7 +209,6 @@ int main() {
     auto light_model = glm::translate(glm::mat4(1.f), light_pos);
 
     scene.light_at(0)->set_model(light_model);
-    transformations.view = cam.view();
 
     if (current_render_index != new_render_index) {
       current_render_index = new_render_index;
@@ -235,7 +233,7 @@ int main() {
     window.poll_events();
     window.exec_keymap();
     if (!debug)
-      cam.rotate_offset(window.get_cursor_pos());
+      cam->rotate_offset(window.get_cursor_pos());
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();

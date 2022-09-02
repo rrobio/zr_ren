@@ -74,6 +74,7 @@ ShadowMappingRenderer::ShadowMappingRenderer(std::filesystem::path root_dir,
 void ShadowMappingRenderer::render(const Scene &scene,
                                    Transformations const &trans, double ticks) {
 
+  assert(trans.cam);
   auto const &light = scene.lights()[0];
   auto const light_pos =
       glm::vec3(light.model()[3]); // get the translation vector
@@ -126,10 +127,10 @@ void ShadowMappingRenderer::render(const Scene &scene,
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_shadow_shader.use();
   m_shadow_shader.set("projection", trans.projection);
-  m_shadow_shader.set("view", trans.view);
+  m_shadow_shader.set("view", trans.cam->view());
   // set lighting uniforms
   m_shadow_shader.set("light.position", light_pos);
-  m_shadow_shader.set("view_pos", trans.camera_position);
+  m_shadow_shader.set("view_pos", trans.cam->pos());
   // shadow_shader.set<int>("shadows", true); // enable/disable shadows by
   // pressing 'SPACE'
   m_shadow_shader.set("far_plane", far_plane);
@@ -150,7 +151,7 @@ void ShadowMappingRenderer::render(const Scene &scene,
 
   m_solid_shader.use();
   m_solid_shader.set<glm::mat4>("projection", trans.projection);
-  m_solid_shader.set<glm::mat4>("view", trans.view);
+  m_solid_shader.set<glm::mat4>("view", trans.cam->view());
   m_solid_shader.set<glm::mat4>("model", light.model());
   m_solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
   scene.lights().front().draw();

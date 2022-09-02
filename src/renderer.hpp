@@ -4,6 +4,8 @@
 #include "imgui.h"
 #include "scene.hpp"
 
+#include "camera.hpp"
+
 namespace ren {
 
 class Renderer {
@@ -13,8 +15,7 @@ public:
     int screen_height{};
     float screen_aspect{};
     glm::mat4 projection{};
-    glm::vec3 camera_position{};
-    glm::mat4 view{};
+    std::shared_ptr<Camera> cam{};
   };
 
   Renderer() = default;

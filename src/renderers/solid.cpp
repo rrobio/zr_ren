@@ -20,6 +20,7 @@ SolidRenderer::SolidRenderer(std::filesystem::path root_dir) {
 
 void SolidRenderer::render(const Scene &scene, Transformations const &trans,
                            double ticks) {
+  assert(trans.cam);
   // auto trans = scene.transformations();
 
   auto const &light = scene.lights()[0];
@@ -29,7 +30,7 @@ void SolidRenderer::render(const Scene &scene, Transformations const &trans,
 
   m_solid_shader.use();
   m_solid_shader.set<glm::mat4>("projection", trans.projection);
-  m_solid_shader.set<glm::mat4>("view", trans.view);
+  m_solid_shader.set<glm::mat4>("view", trans.cam->view());
 
   for (auto const &obj : scene.objects()) {
     m_solid_shader.set<glm::mat4>("model", obj.model());

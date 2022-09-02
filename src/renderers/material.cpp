@@ -17,6 +17,7 @@ MaterialRenderer::MaterialRenderer(std::filesystem::path root_dir) {
 
 void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
                               double ticks) {
+  assert(trans.cam);
   // auto trans = scene.transformations();
 
   auto const &light = scene.lights()[0];
@@ -29,7 +30,7 @@ void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
 
   m_material_shader.use();
   m_material_shader.set<glm::mat4>("projection", trans.projection);
-  m_material_shader.set<glm::mat4>("view", trans.view);
+  m_material_shader.set<glm::mat4>("view", trans.cam->view());
 
   auto const &l_mat = light.material();
   assert(l_mat != nullptr);
@@ -53,7 +54,7 @@ void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
 
   m_solid_shader.use();
   m_solid_shader.set<glm::mat4>("projection", trans.projection);
-  m_solid_shader.set<glm::mat4>("view", trans.view);
+  m_solid_shader.set<glm::mat4>("view", trans.cam->view());
   m_solid_shader.set<glm::mat4>("model", light.model());
   m_solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
   scene.lights().front().draw();

@@ -41,6 +41,7 @@ RayTracingRenderer::RayTracingRenderer(std::filesystem::path root_dir) {
 void RayTracingRenderer::render(const Scene &scene,
                                 Transformations const &trans, double ticks) {
 
+  assert(trans.cam);
   if (m_rendering) {
     if (is_render_done()) {
       create_image_data();
