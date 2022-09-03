@@ -66,9 +66,12 @@ struct Texture {
     if (m_is_valid)
       glBindTexture(GL_TEXTURE_2D, id);
   }
-  void active(GLuint target) const {
-    if (m_is_valid)
-      glActiveTexture(target);
+  void bind(GLuint target) const {
+    if (!m_is_valid)
+      return;
+
+    glActiveTexture(target);
+    glBindTexture(GL_TEXTURE_2D, id);
   }
   // Texture &operator=(Texture &other) {
   //   id = other.id;
