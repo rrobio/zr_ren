@@ -15,7 +15,6 @@ ren_sources = [
   'src/resource_manager.cpp',
   'src/log.cpp',
   'src/scene.cpp',
-  'src/renderers/solid.cpp',
   'src/renderers/shadow_mapping.cpp',
   'src/renderers/material.cpp',
   'src/renderers/raytracing.cpp',
