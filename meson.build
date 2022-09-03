@@ -25,6 +25,7 @@ ren_sources = [
   'libs/imgui/imgui_impl_glfw.cpp',
   'libs/imgui/imgui_impl_opengl3.cpp',
   'libs/imgui/imgui_widgets.cpp',
+  'libs/imgui/imgui_tables.cpp',
 ]
 
 ren_includes = [
