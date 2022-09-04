@@ -82,7 +82,8 @@ void ren_task(RayTracingRenderer::ThreadTask task,
   int const len = image_height * image_width * 3;
   int samples_per_pixel = ra.samples_per_pixel;
   int max_depth = ra.max_depth;
-  int index = ra.start * image_width * 3;
+  int starting_index = ra.start * image_width * 3;
+  int index = starting_index;
 
   assert(task.pixels);
   Pixels *pixels = task.pixels;
@@ -135,7 +136,7 @@ void ren_task(RayTracingRenderer::ThreadTask task,
         (*pixels).at(index++) = z;
       }
     }
-    index = 0;
+    index = starting_index;
     *task.thread_finished = true;
   } while (task.type == RayTracingRenderer::ThreadTaskType::realtime);
 };
