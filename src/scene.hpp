@@ -13,12 +13,10 @@ class Shader;
 
 class Scene {
 public:
-  Scene() : m_lights({ren::create_sphere()}) {}
+  Scene() = default;
   // Scene(std::initializer_list<Object&&> l) : m_objects(std::move(l)) {}
   void add_object(Object &&);
-  void set_lights(std::array<Object, 1> lights) {
-    m_lights = std::move(lights);
-  }
+  void add_light(Object &&);
   // Scene(std::vector<Object> l) : m_objects(l) {}
 
   auto *object_at(size_t index) { return &m_objects.at(index); }
@@ -29,8 +27,7 @@ public:
 
 private:
   std::vector<Object> m_objects;
-  std::array<Object, 1> m_lights{}; // currently limited only to one light per
-                                    // scene for simplicity
+  std::vector<Object> m_lights;
 };
 
 } // namespace ren

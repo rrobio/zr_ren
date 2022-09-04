@@ -119,9 +119,10 @@ int main() {
   auto plane_model = glm::scale(glm::mat4(1.0f), glm::vec3(15.f, 1.f, 15.f));
   plane_model = glm::translate(plane_model, glm::vec3(0.f, -5.f, 0.f));
 
-  auto light_object = ren::create_sphere();
 
   // auto world_model = glm::scale(glm::mat4(1), glm::vec3(30.f, 30.f, 30.f));
+  auto light_material =
+      create_material_from_scatter<ren::diffuse_light>(color(1.f, 1.f, 1.f));
 
   auto plane_material = std::make_shared<ren::Material>();
   plane_material->ambient = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -129,6 +130,7 @@ int main() {
   plane_material->specular = glm::vec3(0.5f, 0.5f, 0.5f);
   plane_material->shininess = 32.f;
   auto material = std::make_shared<ren::Material>(create_random_material());
+  scene.add_light(ren::create_sphere(point3(0, 0, 0), 1.f, light_material));
 
   scene.light_at(0)->set_material(material);
 
