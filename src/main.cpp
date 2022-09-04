@@ -33,7 +33,6 @@
 #include "renderers/shadow_mapping.hpp"
 
 enum RenderIndex {
-  // solid = 0,
   simple_shadow_mapping = 0,
   material,
   raytracing,
@@ -41,13 +40,10 @@ enum RenderIndex {
 
 int const screen_width = 1024;
 int const screen_height = 768;
-// int const channel_count = 4;
 float const screen_aspect =
     static_cast<float>(screen_width) / static_cast<float>(screen_height);
 int const shadow_width = 1440;
 int const shadow_height = 1440;
-// float const shadow_aspect =
-//     static_cast<float>(shadow_width) / static_cast<float>(shadow_height);
 
 bool should_close = false;
 bool debug = false;
@@ -65,16 +61,6 @@ void toggle_debug(ren::Window &window, ImGuiIO &io) {
   }
 }
 
-auto create_random_material() -> ren::Material {
-  ren::Material mat{};
-  mat.ambient = glm::vec3(random_float(), random_float(), random_float());
-  mat.diffuse = glm::vec3(random_float(), random_float(), random_float());
-  mat.specular = glm::vec3(random_float(), random_float(), random_float());
-  mat.shininess = random_float() * 32.f;
-
-  return mat;
-}
-
 auto get_root_directory() -> std::filesystem::path {
   auto path = std::filesystem::canonical("/proc/self/exe");
 
@@ -86,9 +72,7 @@ auto get_root_directory() -> std::filesystem::path {
 }
 
 int main() {
-  // auto current_working_directory = std::filesystem::current_path();
   auto const ren_directory = get_root_directory();
-  // auto const ren_directory = root_directory / "subprojects/ren";
 
   auto window = ren::Window("ren", screen_width, screen_height, false);
   window.set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -170,10 +154,6 @@ int main() {
                    }});
   keymap.set_bind({GLFW_KEY_F1, GLFW_RELEASE,
                    [&window, &io]() { toggle_debug(window, io); }});
-  // keymap->set_bind({GLFW_KEY_R, [&world, &image_data, &cam]() {
-  //					  render_scene_rt(world,
-  // cam, image_data);
-  //                   }});
   window.set_keymap(keymap);
 
   auto smrenderer = std::make_shared<ren::ShadowMappingRenderer>(
@@ -188,7 +168,7 @@ int main() {
       1024,
       768,
       static_cast<float>(screen_width) / static_cast<float>(screen_height),
-      glm::perspective(glm::radians(90.0f), screen_aspect, 0.1f, 100.f),
+      glm::perspective(glm::radians(cam->fov()), screen_aspect, 0.1f, 100.f),
       cam,
   };
 
@@ -248,7 +228,6 @@ int main() {
     static int combo_index = static_cast<int>(current_render_index);
     ImGui::Combo("Renderer", &combo_index, items, IM_ARRAYSIZE(items));
     new_render_index = static_cast<RenderIndex>(combo_index);
-    // ren::Log::the().add_log("current %d\n", new_render_index);
     ImGui::Separator();
     current_renderer->draw_dialog();
 
@@ -258,5 +237,4 @@ int main() {
     window.swap_buffers();
   }
   ren::Log::destroy();
-  // delete[] image_data;
 }
