@@ -77,7 +77,7 @@ private:
     glBufferData(GL_ARRAY_BUFFER, m_verts.size() * sizeof(Vertex),
                  m_verts.data(), GL_STATIC_DRAW);
 
-    if (m_verts.size() != 0) {
+    if (m_indices.size() != 0) {
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLuint),
                    m_indices.data(), GL_STATIC_DRAW);
