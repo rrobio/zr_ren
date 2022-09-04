@@ -58,6 +58,11 @@ public:
 
   auto model() const { return m_model; }
   void set_model(glm::mat4 m) { m_model = m; }
+  void update_model() {
+    auto scaled = glm::scale(glm::mat4(1.f), m_scale);
+    auto scaled_and_translated = glm::translate(scaled, m_translation);
+    m_model = scaled_and_translated;
+  }
   // auto model() const { return m_model; }
   // void set_model(glm::mat4 m) { m_model = m; }
   auto translation() const { return m_translation; }

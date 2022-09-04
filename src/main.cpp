@@ -205,9 +205,8 @@ int main() {
     auto const light_pos =
         glm::vec3(glm::sin(ticks) * 3, 10.f, glm::cos(ticks) * 3);
 
-    auto light_model = glm::translate(glm::mat4(1.f), light_pos);
-
-    scene.light_at(0)->set_model(light_model);
+    scene.light_at(0)->set_translation(light_pos);
+    scene.light_at(0)->update_model();
 
     if (current_render_index != new_render_index) {
       current_render_index = new_render_index;

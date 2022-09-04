@@ -116,7 +116,7 @@ Object create_sphere(glm::vec3 cen, float r, std::shared_ptr<Material> mat) {
 
   obj.set_translation(cen);
   obj.set_scale(vec3(r));
-  // obj.set_model(mod);
+  obj.update_model();
 
   obj.set_material(mat);
   obj.set_hit_function(sphere_hit);
