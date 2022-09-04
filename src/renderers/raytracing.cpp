@@ -117,17 +117,6 @@ void ren_task(RayTracingRenderer::ThreadTask task,
           auto u = (i + random_float()) / (image_width - 1);
           auto v = (j + random_float()) / (image_height - 1);
           ray r = ra.cam->get_ray(u, v);
-          //  debug
-          // for (auto &obj : scene->objects()) {
-          //   auto objt = obj.translation();
-          //   std::printf("obj: pos(%f %f %f), scale(%f)\n", objt.x, objt.y,
-          //               objt.z, obj.scale().x);
-          // }
-          // auto cpos = ra.cam->pos();
-          // std::printf("cam: pos(%f %f %f), front(%f, %f, %f)\n", cpos.x,
-          // cpos.y,
-          //             cpos.z, 0.f, 0.f, 0.f);
-          // /debug
           pixel_color += ren_ray_color(r, scene, max_depth);
         }
         auto [x, y, z] = get_pixel_tuple(pixel_color, samples_per_pixel);
@@ -181,27 +170,6 @@ RayTracingRenderer::RayTracingRenderer(std::filesystem::path root_dir) {
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                         (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
-
-  // auto ren_material_ground = std::make_shared<ren::Material>(
-  //     std::make_shared<ren::lambertian>(color(0.8, 0.8, 0.0)));
-  // auto ren_material_center = std::make_shared<ren::Material>(
-  //     std::make_shared<ren::lambertian>(color(0.1, 0.2, 0.5)));
-  // auto ren_material_left =
-  //     std::make_shared<ren::Material>(std::make_shared<ren::dielectric>(1.5));
-  // auto ren_material_right = std::make_shared<ren::Material>(
-  //     std::make_shared<ren::metal>(color(0.8, 0.6, 0.2), 0.0));
-
-  // m_scene.add_object(
-  //     ren::create_sphere(point3(0.0, -100.5, -1.0), 100,
-  //     ren_material_ground));
-  // m_scene.add_object(
-  //     ren::create_sphere(point3(0.0, 0.0, -1.0), 0.5, ren_material_center));
-  // m_scene.add_object(
-  //     ren::create_sphere(point3(-1.0, 0.0, -1.0), 0.5, ren_material_left));
-  // m_scene.add_object(
-  //     ren::create_sphere(point3(-1.0, 0.0, -1.0), -0.45, ren_material_left));
-  // m_scene.add_object(
-  //     ren::create_sphere(point3(1.0, 0.0, -1.0), 0.5, ren_material_right));
   
   m_realtime_pixels.resize(m_len);
   m_realtime_texture.generate_from_data(m_pixels, m_image_width, m_image_height);
@@ -214,11 +182,6 @@ void RayTracingRenderer::render(const Scene &scene,
   assert(trans.cam);
   a_camera = trans.cam;
   a_scene = &scene;
-  // std::cout << "start ---";
-  // for (auto &obj : a_scene->objects()) {
-  //   std::printf("obj %f %f\n", obj.translation().x, obj.scale().x);
-  // }
-  // std::cout << "stop ---";
   if (m_rendering) {
     if (is_render_done()) {
       create_image_data();
