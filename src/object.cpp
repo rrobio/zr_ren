@@ -2,6 +2,48 @@
 
 // TODO: move objects to separate .cpp files
 namespace ren {
+bool plane_hit(Object const &obj, ray const &r, float t_min, float t_max,
+               hit_record &rec) {
+
+  struct Coords {
+    point3 a;
+    point3 b;
+  };
+  auto get_coords = [](Object const &obj) -> Coords {
+    // TODO: object rotation
+    auto t = obj.translation();
+    auto s = obj.scale();
+
+    auto x = s.x + t.x;
+    auto y = t.y;
+    auto z = s.x + t.z;
+
+    auto a = point3(-x, y,  z);
+    auto b = point3( x, y, -z);
+
+    return {a, b};
+  };
+
+  auto coords = get_coords(obj);
+
+  auto k = coords.a.y;
+  auto t = (k - r.origin().y) / r.direction().y;
+  if (t < t_min || t > t_max)
+    return false;
+  auto x = r.origin().x + t * r.direction().x;
+  auto z = r.origin().z + t * r.direction().z;
+  if (x < coords.a.x || x > coords.b.x || z > coords.a.z || z < coords.b.z) {
+    return false;
+  }
+  // rec.u = (x - coords.a.x) / (coords.b.x - coords.a.x);
+  // rec.v = (z - coords.a.z) / (coords.b.z - coords.a.z);
+  rec.t = t;
+  auto outward_normal = vec3(0, 1, 0);
+  rec.set_face_normal(r, outward_normal);
+  rec.mat_ptr = obj.material();
+  rec.p = r.at(t);
+  return true;
+}
 
 bool sphere_hit(Object const &obj, ray const &r, float t_min, float t_max,
                 hit_record &rec) {
@@ -403,6 +445,18 @@ Object create_plane() {
 	return Object(verts);
 }
 
+Object create_plane(glm::vec3 cen, vec3 scale, std::shared_ptr<Material> mat) {
+  auto obj = create_plane();
+
+  obj.set_translation(cen);
+  obj.set_scale(vec3(scale));
+  obj.update_model();
+
+  obj.set_material(mat);
+  obj.set_hit_function(plane_hit);
+
+  return obj;
+}
 Object create_skybox()
 {
 	// clang-format off
