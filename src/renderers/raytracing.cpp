@@ -202,6 +202,10 @@ RayTracingRenderer::RayTracingRenderer(std::filesystem::path root_dir) {
   //     ren::create_sphere(point3(-1.0, 0.0, -1.0), -0.45, ren_material_left));
   // m_scene.add_object(
   //     ren::create_sphere(point3(1.0, 0.0, -1.0), 0.5, ren_material_right));
+  
+  m_realtime_pixels.resize(m_len);
+  m_realtime_texture.generate_from_data(m_pixels, m_image_width, m_image_height);
+  assert(m_realtime_texture.m_is_valid);
 }
 
 void RayTracingRenderer::render(const Scene &scene,
@@ -450,9 +454,6 @@ void RayTracingRenderer::rt_create_image_data() {
   if (m_realtime_texture.m_is_valid) {
     m_realtime_texture.update_data(m_realtime_pixels, m_image_width,
                                    m_image_height);
-  } else {
-    m_realtime_texture.generate_from_data(m_realtime_pixels, m_image_width,
-                                          m_image_height);
   }
 }
 void RayTracingRenderer::save_to_file() {
