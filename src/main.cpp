@@ -85,14 +85,9 @@ int main() {
   window.set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   window.set_input_mode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
-  auto cam = std::make_shared<ren::Camera>(ren::Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.f, 0.f, 0.f),
-                         glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, screen_aspect));
-
-  ren::Scene scene{};
-  scene.add_object(ren::create_plane());
-  for (size_t i = 0; i < 10; i++) {
-    scene.add_object(ren::create_sphere());
-  }
+  auto cam = std::make_shared<ren::Camera>(
+      ren::Camera(glm::vec3(-2.0f, 2.0f, 1.0f), glm::vec3(0.f, 0.f, -1.f),
+                  glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, screen_aspect));
 
   glEnable(GL_DEPTH_TEST);
 
@@ -107,11 +102,8 @@ int main() {
 
   ren::Log::init();
 
-  auto plane_model = glm::scale(glm::mat4(1.0f), glm::vec3(15.f, 1.f, 15.f));
-  plane_model = glm::translate(plane_model, glm::vec3(0.f, -5.f, 0.f));
+  ren::Scene scene{};
 
-
-  // auto world_model = glm::scale(glm::mat4(1), glm::vec3(30.f, 30.f, 30.f));
   auto material_left =
       std::make_shared<ren::Material>(std::make_shared<ren::dielectric>(1.5));
   auto material_ground =
@@ -121,26 +113,19 @@ int main() {
   auto light_material =
       create_material_from_scatter<ren::diffuse_light>(color(1.f, 1.f, 1.f));
 
-  auto plane_material = std::make_shared<ren::Material>();
-  plane_material->ambient = glm::vec3(1.0f, 0.5f, 0.31f);
-  plane_material->diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-  plane_material->specular = glm::vec3(0.5f, 0.5f, 0.5f);
-  plane_material->shininess = 32.f;
-  auto material = std::make_shared<ren::Material>(create_random_material());
   scene.add_light(ren::create_sphere(point3(0, 0, 0), 1.f, light_material));
 
-  scene.light_at(0)->set_material(material);
+  scene.add_object(ren::create_plane(vec3(0.f, -5.f, 0.f),
+                                     vec3(15.f, 1.f, 15.f), material_ground));
 
-  scene.object_at(0)->set_model(plane_model);
-  scene.object_at(0)->set_material(plane_material);
-  for (size_t i = 1; i < scene.size(); i++) {
+  for (size_t i = 1; i < 10; i++) {
     auto x = (random_float() * 2 - 1) * 5;
     auto y = (random_float() * 2 - 1) * 5;
     auto z = (random_float() * 2 - 1) * 5;
-    auto cube_model = glm::translate(glm::mat4(1), glm::vec3(x, y, z));
+    auto translation = vec3(x, y, z);
+    auto sphere_model = glm::translate(glm::mat4(1), translation);
 
-    scene.object_at(i)->set_model(cube_model);
-    scene.object_at(i)->set_material(material);
+    scene.add_object(ren::create_sphere(point3(x, y, z), 1.f, material_center));
   }
 
   auto const speed = 0.05f;
@@ -171,7 +156,6 @@ int main() {
 
   auto smrenderer = std::make_shared<ren::ShadowMappingRenderer>(
       ren_directory, shadow_width, shadow_height);
-  // auto solid_renderer = std::make_shared<ren::SolidRenderer>(ren_directory);
   auto materialrenderer =
       std::make_shared<ren::MaterialRenderer>(ren_directory);
   auto raytracing_renderer =
@@ -189,9 +173,10 @@ int main() {
 
   RenderIndex current_render_index = RenderIndex::simple_shadow_mapping;
   auto new_render_index = current_render_index;
+
   bool pause_scene = false;
   while (!window.should_close()) {
-    glClearColor(0.3f, 0.2f, 0.3f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto ticks = glfwGetTime();
@@ -200,15 +185,13 @@ int main() {
       auto const light_pos =
           glm::vec3(glm::sin(ticks) * 3, 10.f, glm::cos(ticks) * 3);
 
-    scene.light_at(0)->set_translation(light_pos);
-    scene.light_at(0)->update_model();
+      scene.light_at(0)->set_translation(light_pos);
+      scene.light_at(0)->update_model();
+    }
 
     if (current_render_index != new_render_index) {
       current_render_index = new_render_index;
       switch (current_render_index) {
-      // case RenderIndex::solid:
-      //   current_renderer = solid_renderer;
-      //   break;
       case RenderIndex::simple_shadow_mapping:
         current_renderer = smrenderer;
         break;
