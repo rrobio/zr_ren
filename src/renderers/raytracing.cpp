@@ -61,18 +61,32 @@ static color ren_ray_color(ray const &r, Scene const *world, int depth) {
   }
 
   ray scattered;
-  color attenuation;
+  color albedo;
   color emitted = rec.mat_ptr->scatter->emitted();
+  float pdf;
 
-  if (!rec.mat_ptr->scatter->scatter(r, rec, attenuation, scattered))
+  if (!rec.mat_ptr->scatter->scatter(r, rec, albedo, scattered, pdf))
     return emitted;
-  
-    
-  return emitted + attenuation * ren_ray_color(scattered, world, depth - 1);
 
-  // vec3 unit_direction = glm::normalize(r.direction());
-  // float t = 0.5 * (unit_direction.y + 1.0);
-  // return (1.0f - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
+  auto &light = world->lights().at(0);
+  auto on_light = light.translation();
+  auto to_light = on_light - rec.p;
+  auto distance_squared = glm::length2(to_light);
+  to_light = glm::normalize(to_light);
+
+  if (glm::dot(to_light, rec.normal) < 0)
+    return emitted;
+
+  float light_area = 512.f * light.scale().x; // TODO: magic number
+  auto light_cosine = fabs(to_light.y);
+  if (light_cosine < 0.000001)
+    return emitted;
+
+  pdf = distance_squared / (light_cosine * light_area);
+  scattered = ray(rec.p, to_light);
+  return emitted + albedo *
+                       rec.mat_ptr->scatter->scattering_pdf(r, rec, scattered) *
+                       ren_ray_color(scattered, world, depth - 1) / pdf;
 }
 
 void ren_task(RayTracingRenderer::ThreadTask task,
