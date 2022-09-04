@@ -357,8 +357,8 @@ void RayTracingRenderer::setup_threads(ThreadTask task, Scene const *scene) {
   RenderTaskArgs ra{a_camera,
                     m_image_height,
                     m_image_width,
-                    m_samples_per_pixel,
-                    m_max_depth,
+                    0,
+                    0,
                     0,
                     0};
 
@@ -381,8 +381,12 @@ void RayTracingRenderer::setup_threads(ThreadTask task, Scene const *scene) {
   int n_threads = 0;
   if (task.type == ThreadTaskType::normal) {
     n_threads = m_n_threads;
+    ra.samples_per_pixel = m_samples_per_pixel;
+    ra.max_depth = m_max_depth;
   } else {
     n_threads = m_realtime_n_threads;
+    ra.samples_per_pixel = m_realtime_samples_per_pixel;
+    ra.max_depth = m_realtime_max_depth;
   }
 
   for (auto const s : stepper(m_image_height, n_threads)) {
