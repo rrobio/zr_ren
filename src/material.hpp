@@ -14,8 +14,27 @@ float schlick(float cosine, float ref_idx);
 class Scatter {
 public:
   virtual ~Scatter() = default;
+  virtual color emitted() const {
+    return color(0, 0, 0);
+  }
   virtual bool scatter(ray const &r_in, hit_record const &rec,
                        color &attenuation, ray &scattered) const = 0;
+};
+
+class diffuse_light : public Scatter {
+public:
+  diffuse_light(color c) : emit(c) {}
+
+  virtual bool scatter(const ray &r_in, const hit_record &rec,
+                       color &attenuation, ray &scattered) const override {
+    return false;
+  }
+
+  virtual color emitted() const override {
+    return emit;
+  }
+
+  color emit;
 };
 
 class lambertian : public Scatter {
