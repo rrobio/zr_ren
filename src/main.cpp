@@ -15,25 +15,22 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-// clang-format off
-#include "window.hpp"
-#include "input.hpp"
-#include "shader.hpp"
 #include "camera.hpp"
-#include "object.hpp"
-#include "resource_manager.hpp"
-#include "texture.hpp"
 #include "cubemap.hpp"
+#include "input.hpp"
 #include "log.hpp"
 #include "material.hpp"
+#include "object.hpp"
+#include "resource_manager.hpp"
 #include "scene.hpp"
+#include "shader.hpp"
+#include "texture.hpp"
 #include "util.hpp"
+#include "window.hpp"
 
-// #include "renderers/solid.hpp"
-#include "renderers/shadow_mapping.hpp"
 #include "renderers/material.hpp"
 #include "renderers/raytracing.hpp"
-// clang-format on
+#include "renderers/shadow_mapping.hpp"
 
 enum RenderIndex {
   // solid = 0,
