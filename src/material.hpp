@@ -121,6 +121,13 @@ struct Material {
 
   std::shared_ptr<Scatter> scatter;
 
+  template <typename T, typename... Ts>
+  static auto create_material_from_scatter(Ts... args)
+      -> std::shared_ptr<ren::Material> {
+    auto scatter = std::make_shared<T>(args...);
+    return std::make_shared<ren::Material>(scatter);
+  }
+
   Material() = default;
   Material(std::shared_ptr<Scatter> s) : scatter(s) {}
   Material(glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, float shin)

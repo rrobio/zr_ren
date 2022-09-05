@@ -70,14 +70,6 @@ auto get_root_directory() -> std::filesystem::path {
 
   return path;
 }
-
-template <typename T, typename... Ts>
-auto create_material_from_scatter(Ts... args)
-    -> std::shared_ptr<ren::Material> {
-  auto scatter = std::make_shared<T>(std::forward<Ts>(args)...);
-  return std::make_shared<ren::Material>(scatter);
-}
-
 int main() {
   auto const ren_directory = get_root_directory();
 
@@ -104,14 +96,12 @@ int main() {
 
   ren::Scene scene{};
 
-  auto material_left =
-      std::make_shared<ren::Material>(std::make_shared<ren::dielectric>(1.5));
-  auto material_ground =
-      create_material_from_scatter<ren::lambertian>(color(0.8, 0.8, 0.0));
-  auto material_center =
-      create_material_from_scatter<ren::lambertian>(color(0.1, 0.2, 0.5));
-  auto light_material =
-      create_material_from_scatter<ren::diffuse_light>(color(1.f, 1.f, 1.f));
+  auto material_plane =
+      ren::Material::create_material_from_scatter<ren::lambertian>(color(0.8, 0.8, 0.0));
+  auto material_sphere =
+      ren::Material::create_material_from_scatter<ren::lambertian>(color(0.1, 0.2, 0.5));
+  auto material_light =
+      ren::Material::create_material_from_scatter<ren::diffuse_light>(color(1.f, 1.f, 1.f));
 
   scene.add_light(ren::create_sphere(point3(0, 0, 0), 1.f, light_material));
 
