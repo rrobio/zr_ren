@@ -21,8 +21,6 @@ void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
   // auto trans = scene.transformations();
 
   auto const &light = scene.lights()[0];
-  auto const light_pos =
-      glm::vec3(light.model()[3]); // get the translation vector
 
   glViewport(0, 0, trans.screen_width, trans.screen_height);
   glEnable(GL_DEPTH_TEST);
@@ -38,7 +36,7 @@ void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
   m_material_shader.set<glm::vec3>("light.diffuse", l_mat->diffuse);
   m_material_shader.set<glm::vec3>("light.specular", l_mat->specular);
 
-  m_material_shader.set<glm::vec3>("light.position", light_pos);
+  m_material_shader.set<glm::vec3>("light.position", light.translation());
 
   for (auto const &obj : scene.objects()) {
     auto const &mat = obj.material();
@@ -57,6 +55,6 @@ void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
   m_solid_shader.set<glm::mat4>("view", trans.cam->view());
   m_solid_shader.set<glm::mat4>("model", light.model());
   m_solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
-  scene.lights().front().draw();
+  light.draw();
 }
 } // namespace ren

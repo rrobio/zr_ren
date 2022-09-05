@@ -76,8 +76,7 @@ void ShadowMappingRenderer::render(const Scene &scene,
 
   assert(trans.cam);
   auto const &light = scene.lights()[0];
-  auto const light_pos =
-      glm::vec3(light.model()[3]); // get the translation vector
+  auto const light_pos = light.translation();
   m_shadow_transforms[0] =
       (m_shadow_proj * glm::lookAt(light_pos,
                                    light_pos + glm::vec3(1.0f, 0.0f, 0.0f),
