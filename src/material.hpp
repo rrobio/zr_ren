@@ -11,6 +11,14 @@
 namespace ren {
 float schlick(float cosine, float ref_idx);
 
+enum class ScatterType {
+  none,
+  diffuse_light,
+  lambertian,
+  metal,
+  dielectric,
+};
+
 class Scatter {
 public:
   virtual ~Scatter() = default;
