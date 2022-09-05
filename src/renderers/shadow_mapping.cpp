@@ -130,8 +130,6 @@ void ShadowMappingRenderer::render(const Scene &scene,
   // set lighting uniforms
   m_shadow_shader.set("light.position", light_pos);
   m_shadow_shader.set("view_pos", trans.cam->pos());
-  // shadow_shader.set<int>("shadows", true); // enable/disable shadows by
-  // pressing 'SPACE'
   m_shadow_shader.set("far_plane", far_plane);
 
   m_shadow_shader.set<GLuint>("diffuse_texture", 0);

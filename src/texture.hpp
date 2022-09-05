@@ -73,22 +73,6 @@ struct Texture {
     glActiveTexture(target);
     glBindTexture(GL_TEXTURE_2D, id);
   }
-  // Texture &operator=(Texture &other) {
-  //   id = other.id;
-  //   width = other.width;
-  //   height = other.height;
-  //   m_is_valid = other.m_is_valid;
-  //   other.m_is_valid = false;
-  //   return *this;
-  // }
-  // Texture &operator=(Texture &&other) {
-  //   id = other.id;
-  //   width = other.width;
-  //   height = other.height;
-  //   m_is_valid = other.m_is_valid;
-  //   other.m_is_valid = false;
-  //   return *this;
-  // }
 };
 
 class TextureManager {
