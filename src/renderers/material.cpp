@@ -18,7 +18,6 @@ MaterialRenderer::MaterialRenderer(std::filesystem::path root_dir) {
 void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
                               double ticks) {
   assert(trans.cam);
-  // auto trans = scene.transformations();
 
   auto const &light = scene.lights()[0];
 
@@ -32,9 +31,10 @@ void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
 
   auto const &l_mat = light.material();
   assert(l_mat != nullptr);
-  m_material_shader.set<glm::vec3>("light.ambient", l_mat->ambient);
-  m_material_shader.set<glm::vec3>("light.diffuse", l_mat->diffuse);
-  m_material_shader.set<glm::vec3>("light.specular", l_mat->specular);
+  m_material_shader.set<glm::vec3>("light.ambient", vec3(1.f));
+  m_material_shader.set<glm::vec3>("light.diffuse", vec3(1.f));
+  m_material_shader.set<glm::vec3>("light.specular", vec3(1.f));
+
 
   m_material_shader.set<glm::vec3>("light.position", light.translation());
 
@@ -42,11 +42,10 @@ void MaterialRenderer::render(const Scene &scene, Transformations const &trans,
     auto const &mat = obj.material();
     assert(mat != nullptr);
     m_material_shader.set<glm::mat4>("model", obj.model());
-    // std::cout << glm::to_string(mat->ambient) << std::endl;
-    m_material_shader.set<glm::vec3>("material.ambient", mat->ambient);
-    m_material_shader.set<glm::vec3>("material.diffuse", mat->diffuse);
-    m_material_shader.set<glm::vec3>("material.specular", mat->specular);
-    m_material_shader.set<float>("material.shininess", mat->shininess);
+    m_material_shader.set<vec3>("material.ambient", vec3(0.5f, 0.5f, 0.31f));
+    m_material_shader.set<vec3>("material.diffuse", vec3(0.7f, 0.2f, 0.4f));
+    m_material_shader.set<vec3>("material.specular", vec3(0.5f, 0.5f, 0.5f));
+    m_material_shader.set<float>("material.shininess", 32.0f);
     obj.draw();
   }
 
