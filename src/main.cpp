@@ -42,8 +42,8 @@ int const screen_width = 1024;
 int const screen_height = 768;
 float const screen_aspect =
     static_cast<float>(screen_width) / static_cast<float>(screen_height);
-int const shadow_width = 1440;
-int const shadow_height = 1440;
+int const shadow_width = screen_width*4;
+int const shadow_height = shadow_width;;
 
 bool should_close = false;
 bool debug = false;
@@ -73,6 +73,7 @@ auto get_root_directory() -> std::filesystem::path {
 int main() {
   auto const ren_directory = get_root_directory();
 
+  // Initialization -------------------
   auto window = ren::Window("ren", screen_width, screen_height, false);
   window.set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   window.set_input_mode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -94,6 +95,7 @@ int main() {
 
   ren::Log::init();
 
+  // Setup the scene -------------------
   ren::Scene scene{};
 
   auto material_plane =
@@ -103,19 +105,19 @@ int main() {
   auto material_light =
       ren::Material::create_material_from_scatter<ren::diffuse_light>(color(1.f, 1.f, 1.f));
 
-  scene.add_light(ren::create_sphere(point3(0, 0, 0), 1.f, light_material));
+  scene.add_light(ren::create_sphere(point3(0, 0, 0), 1.f, material_light));
 
   scene.add_object(ren::create_plane(vec3(0.f, -5.f, 0.f),
-                                     vec3(15.f, 1.f, 15.f), material_ground));
+                                     vec3(20.f, 1.f, 20.f), material_plane));
 
   for (size_t i = 1; i < 10; i++) {
     auto x = (random_float() * 2 - 1) * 5;
-    auto y = (random_float() * 2 - 1) * 5;
+    auto y = random_float() * 5;
     auto z = (random_float() * 2 - 1) * 5;
     auto translation = vec3(x, y, z);
     auto sphere_model = glm::translate(glm::mat4(1), translation);
 
-    scene.add_object(ren::create_sphere(point3(x, y, z), 1.f, material_center));
+    scene.add_object(ren::create_sphere(point3(x, y, z), 1.f, material_sphere));
   }
 
   auto const speed = 0.05f;

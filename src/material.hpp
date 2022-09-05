@@ -28,7 +28,7 @@ public:
     return false;
   }
   virtual float scattering_pdf(ray const &r_in, hit_record const &rec,
-                                ray const &scatterd) const {
+                               ray const &scatterd) const {
     return 0;
   }
 };
@@ -122,9 +122,9 @@ public:
 };
 
 struct Material {
-  glm::vec3 ambient;
-  glm::vec3 diffuse;
-  glm::vec3 specular;
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
   float shininess;
 
   std::shared_ptr<Scatter> scatter;
