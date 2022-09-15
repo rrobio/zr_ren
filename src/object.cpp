@@ -18,8 +18,8 @@ bool plane_hit(Object const &obj, ray const &r, float t_min, float t_max,
     auto y = t.y;
     auto z = s.x + t.z;
 
-    auto a = point3(-x, y,  z);
-    auto b = point3( x, y, -z);
+    auto a = point3(-x, y, z);
+    auto b = point3(x, y, -z);
 
     return {a, b};
   };

@@ -44,8 +44,9 @@ int const screen_width = 1024;
 int const screen_height = 768;
 float const screen_aspect =
     static_cast<float>(screen_width) / static_cast<float>(screen_height);
-int const shadow_width = screen_width*4;
-int const shadow_height = shadow_width;;
+int const shadow_width = screen_width * 4;
+int const shadow_height = shadow_width;
+;
 
 bool should_close = false;
 bool debug = false;
@@ -101,17 +102,24 @@ int main() {
   ren::Scene scene{};
 
   auto material_plane =
-      ren::Material::create_material_from_scatter<ren::lambertian>(color(0.8, 0.8, 0.0));
+      ren::Material::create_material_from_scatter<ren::lambertian>(
+          color(0.8, 0.8, 0.0));
   auto material_sphere =
-      ren::Material::create_material_from_scatter<ren::lambertian>(color(0.1, 0.2, 0.5));
+      ren::Material::create_material_from_scatter<ren::lambertian>(
+          color(0.1, 0.2, 0.5));
   auto material_light =
-      ren::Material::create_material_from_scatter<ren::diffuse_light>(color(1.f, 1.f, 1.f));
+      ren::Material::create_material_from_scatter<ren::diffuse_light>(
+          color(1.f, 1.f, 1.f));
 
   scene.add_light(ren::create_sphere(point3(0, 0, 0), 1.f, material_light));
 
   scene.add_object(ren::create_plane(vec3(0.f, -5.f, 0.f),
                                      vec3(20.f, 1.f, 20.f), material_plane));
 
+  // auto plane_model = glm::rotate(glm::mat4(1.f),glm::radians(180.f),
+  // vec3(0.f,0.f,1.f)); plane_model = glm::translate(plane_model,vec3(0.f, 5.f,
+  // 0.f)); plane_model = glm::scale(plane_model, vec3(20.f, 1.f, 20.f));
+  // scene.object_at(0)->set_model(plane_model);
   for (size_t i = 1; i < 10; i++) {
     auto x = (random_float() * 2 - 1) * 5;
     auto y = random_float() * 5;
@@ -158,7 +166,8 @@ int main() {
 
   auto smrenderer = std::make_shared<ren::ShadowMappingRenderer>(
       ren_directory, shadow_width, shadow_height);
-  auto svrenderer = std::make_shared<ren::ShadowVolumeRenderer>(ren_directory, transformations);
+  auto svrenderer = std::make_shared<ren::ShadowVolumeRenderer>(
+      ren_directory, transformations);
   auto materialrenderer =
       std::make_shared<ren::MaterialRenderer>(ren_directory);
   auto raytracing_renderer =
@@ -221,7 +230,8 @@ int main() {
 
     ImGui::Begin("Renderer");
     ImGui::Checkbox("Puase scene", &pause_scene);
-    const char *items[] = {"Simple Shadow Mapping", "Shadow Volume","Material", "RayTracing"};
+    const char *items[] = {"Simple Shadow Mapping", "Shadow Volume", "Material",
+                           "RayTracing"};
     static int combo_index = static_cast<int>(current_render_index);
     ImGui::Combo("Renderer", &combo_index, items, IM_ARRAYSIZE(items));
     new_render_index = static_cast<RenderIndex>(combo_index);
