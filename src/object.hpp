@@ -59,7 +59,8 @@ public:
   auto model() const { return m_model; }
   void set_model(glm::mat4 m) { m_model = m; }
   void update_model() {
-    auto scaled = glm::scale(glm::mat4(1.f), m_scale);
+    auto rotated = glm::rotate(glm::mat4(1.f), glm::radians(m_rotation_scale), m_rotation_vector);
+    auto scaled = glm::scale(rotated, m_scale);
     auto scaled_and_translated = glm::translate(scaled, m_translation);
     m_model = scaled_and_translated;
   }
@@ -69,7 +70,11 @@ public:
   void set_translation(vec3 t) { m_translation = t; }
   auto scale() const { return m_scale; }
   void set_scale(vec3 s) { m_scale = s; }
-
+  auto rotation_vector() const { return m_rotation_vector; }
+  auto rotation_scale() const { return m_rotation_scale; }
+  void set_rotation_vector(vec3 rt) { m_rotation_vector = rt; }
+  void set_rotation_scale(float deg) { m_rotation_scale = deg; }
+ 
   auto material() const -> std::shared_ptr<Material> { return m_material; }
   void set_material(std::shared_ptr<Material> m) { m_material = m; }
 
@@ -83,9 +88,11 @@ private:
   hit_function m_hit;
   std::unique_ptr<Mesh> m_mesh{};
   std::shared_ptr<Material> m_material{};
-  glm::mat4 m_model{};
-  vec3 m_translation;
-  vec3 m_scale;
+  glm::mat4 m_model{1.f};
+  vec3 m_translation{0.f};
+  vec3 m_scale{1.f};
+  vec3 m_rotation_vector{1.f, 1.f, 1.f};
+  float m_rotation_scale{0};
   Type m_type{Type::custom};
 };
 
