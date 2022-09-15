@@ -18,6 +18,7 @@ ren_sources = [
   'src/renderers/shadow_mapping.cpp',
   'src/renderers/material.cpp',
   'src/renderers/raytracing.cpp',
+  'src/renderers/shadow_volume.cpp',
 
   'libs/imgui/imgui.cpp',
   'libs/imgui/imgui_draw.cpp',

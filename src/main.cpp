@@ -31,9 +31,11 @@
 #include "renderers/material.hpp"
 #include "renderers/raytracing.hpp"
 #include "renderers/shadow_mapping.hpp"
+#include "renderers/shadow_volume.hpp"
 
 enum RenderIndex {
   simple_shadow_mapping = 0,
+  shadow_volume,
   material,
   raytracing,
 };
@@ -146,20 +148,21 @@ int main() {
                    [&window, &io]() { toggle_debug(window, io); }});
   window.set_keymap(keymap);
 
-  auto smrenderer = std::make_shared<ren::ShadowMappingRenderer>(
-      ren_directory, shadow_width, shadow_height);
-  auto materialrenderer =
-      std::make_shared<ren::MaterialRenderer>(ren_directory);
-  auto raytracing_renderer =
-      std::make_shared<ren::RayTracingRenderer>(ren_directory);
-
   ren::Renderer::Transformations transformations{
-      1024,
-      768,
+      screen_width,
+      screen_height,
       static_cast<float>(screen_width) / static_cast<float>(screen_height),
       glm::perspective(glm::radians(cam->fov()), screen_aspect, 0.1f, 100.f),
       cam,
   };
+
+  auto smrenderer = std::make_shared<ren::ShadowMappingRenderer>(
+      ren_directory, shadow_width, shadow_height);
+  auto svrenderer = std::make_shared<ren::ShadowVolumeRenderer>(ren_directory, transformations);
+  auto materialrenderer =
+      std::make_shared<ren::MaterialRenderer>(ren_directory);
+  auto raytracing_renderer =
+      std::make_shared<ren::RayTracingRenderer>(ren_directory);
 
   std::shared_ptr<ren::Renderer> current_renderer = smrenderer;
 
@@ -186,6 +189,9 @@ int main() {
       switch (current_render_index) {
       case RenderIndex::simple_shadow_mapping:
         current_renderer = smrenderer;
+        break;
+      case RenderIndex::shadow_volume:
+        current_renderer = svrenderer;
         break;
       case RenderIndex::material:
         current_renderer = materialrenderer;
@@ -215,7 +221,7 @@ int main() {
 
     ImGui::Begin("Renderer");
     ImGui::Checkbox("Puase scene", &pause_scene);
-    const char *items[] = {"Simple Shadow Mapping", "Material", "RayTracing"};
+    const char *items[] = {"Simple Shadow Mapping", "Shadow Volume","Material", "RayTracing"};
     static int combo_index = static_cast<int>(current_render_index);
     ImGui::Combo("Renderer", &combo_index, items, IM_ARRAYSIZE(items));
     new_render_index = static_cast<RenderIndex>(combo_index);
