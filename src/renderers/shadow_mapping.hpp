@@ -2,15 +2,12 @@
 
 #include "../renderer.hpp"
 
-#include <filesystem>
 #include <vector>
 
 // clang-format off
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 // clang-format on
-
-#include "../shader.hpp"
 
 namespace ren {
 
