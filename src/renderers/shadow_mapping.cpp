@@ -75,7 +75,7 @@ void ShadowMappingRenderer::render(const Scene &scene,
                                    Transformations const &trans, double ticks) {
 
   assert(trans.cam);
-  auto const &light = scene.lights()[0];
+  auto const &light = scene.lights().at(0);
   auto const light_pos = light.translation();
   m_shadow_transforms[0] =
       (m_shadow_proj * glm::lookAt(light_pos,
@@ -132,12 +132,8 @@ void ShadowMappingRenderer::render(const Scene &scene,
   m_shadow_shader.set("view_pos", trans.cam->pos());
   m_shadow_shader.set("far_plane", far_plane);
 
-  m_shadow_shader.set<GLuint>("diffuse_texture", 0);
+  m_shadow_shader.set<GLuint>("depth_map", 0);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, 1); // no_tex.id);
-
-  m_shadow_shader.set<GLuint>("depth_map", 1);
-  glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_depth_cubemap);
 
   m_shadow_shader.use();
