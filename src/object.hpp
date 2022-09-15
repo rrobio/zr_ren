@@ -34,10 +34,10 @@ public:
         m_model(o.m_model), m_translation(o.m_translation), m_scale(o.m_scale),
         m_type(o.m_type), m_hit(o.m_hit) {}
   Object(Object &o) = delete;
-  Object(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
-    m_mesh = Mesh::construct(vertices, indices);
+  Object(std::vector<Vertex> vertices, std::vector<GLuint> indices, bool adjacency = false) {
+    m_mesh = Mesh::construct(vertices, indices, adjacency);
   }
-  Object(std::vector<Vertex> vertices) { m_mesh = Mesh::construct(vertices); }
+  Object(std::vector<Vertex> vertices) { m_mesh = Mesh::construct(vertices, false); }
   Object &operator=(Object &&o) {
     m_mesh = std::move(o.m_mesh);
     m_material = o.m_material;
