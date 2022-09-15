@@ -225,6 +225,9 @@ int main() {
     auto frametime = glfwGetTime() - ticks;
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
     ImGui::Text("frametime: %f", frametime);
+    ImGui::BulletText("W/A/S/D - Movement");
+    ImGui::BulletText("E/Q - Up/Down");
+    ImGui::BulletText("F1 - toggle debug");
 
     ren::Log::the().draw("Log");
 
