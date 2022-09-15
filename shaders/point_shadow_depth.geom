@@ -1,5 +1,5 @@
 #version 330 core
-layout (triangles) in;
+layout (triangles_adjacency) in;
 layout (triangle_strip, max_vertices=18) out;
 
 uniform mat4 shadow_matrices[6];

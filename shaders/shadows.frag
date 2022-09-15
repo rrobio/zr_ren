@@ -11,7 +11,7 @@ in VS_OUT {
    vec2 tex_coords;
 } fs_in;
 
-uniform	sampler2D diffuse_texture;
+// uniform	sampler2D diffuse_texture;
 uniform	samplerCube depth_map;
 uniform Light light;
 uniform vec3 view_pos;
@@ -39,7 +39,7 @@ float shadow_calculation(vec3 frag_pos)
 
 void main()
 {
-	vec3 color = texture(diffuse_texture, fs_in.tex_coords).rgb;
+	vec3 color = vec3(0.2f, 0.3f, 0.4f);//texture(diffuse_texture, fs_in.tex_coords).rgb;// FIXME: get color from material
 	vec3 norm = normalize(fs_in.normal);
 	vec3 light_color = vec3(0.3);
 
