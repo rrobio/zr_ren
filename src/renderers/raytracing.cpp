@@ -184,9 +184,10 @@ RayTracingRenderer::RayTracingRenderer(std::filesystem::path root_dir) {
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                         (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
-  
+
   m_realtime_pixels.resize(m_len);
-  m_realtime_texture.generate_from_data(m_pixels, m_image_width, m_image_height);
+  m_realtime_texture.generate_from_data(m_pixels, m_image_width,
+                                        m_image_height);
   assert(m_realtime_texture.m_is_valid);
 }
 
@@ -214,7 +215,14 @@ void RayTracingRenderer::render(const Scene &scene,
 
   // realtime rendering
   if (m_has_render || m_render_realtime) {
+    // reset settings when switching from other renderers
+    glDrawBuffer(GL_BACK);
+    glDepthFunc(GL_LESS);
+    glDisable(GL_CULL_FACE);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     m_fstexture_shader.use();
+    m_fstexture_shader.set("render_texture", 0);
+
     if (m_render_realtime) {
       m_realtime_texture.bind(GL_TEXTURE0);
     } else {
@@ -335,13 +343,7 @@ void RayTracingRenderer::setup_threads(ThreadTask task, Scene const *scene) {
   };
 
   int i = 0;
-  RenderTaskArgs ra{a_camera,
-                    m_image_height,
-                    m_image_width,
-                    0,
-                    0,
-                    0,
-                    0};
+  RenderTaskArgs ra{a_camera, m_image_height, m_image_width, 0, 0, 0, 0};
 
   // thread function;
   auto call = [this](ThreadTask tt, RenderTaskArgs ra, Scene const *s,
