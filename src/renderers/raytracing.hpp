@@ -30,6 +30,9 @@ public:
   };
   void render(const Scene &, Transformations const &, double ticks) override;
   void draw_dialog() override;
+  void destroy() {
+    destroy_realtime();
+  }
 
   struct RenderTaskArgs {
     std::shared_ptr<Camera> cam;

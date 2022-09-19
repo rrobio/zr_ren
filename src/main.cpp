@@ -247,5 +247,6 @@ int main() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     window.swap_buffers();
   }
+  raytracing_renderer->destroy();
   ren::Log::destroy();
 }

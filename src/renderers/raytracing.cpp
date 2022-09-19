@@ -77,7 +77,7 @@ static color ren_ray_color(ray const &r, Scene const *world, int depth) {
   if (glm::dot(to_light, rec.normal) < 0)
     return emitted;
 
-  float light_area = 2048.f * light.scale().x; // TODO: magic number
+  float light_area = 2048.f * light.scale().x;
   auto light_cosine = fabs(to_light.y);
   if (light_cosine < 0.000001)
     return emitted;
