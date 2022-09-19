@@ -59,10 +59,10 @@ public:
   auto model() const { return m_model; }
   void set_model(glm::mat4 m) { m_model = m; }
   void update_model() {
-    auto rotated = glm::rotate(glm::mat4(1.f), glm::radians(m_rotation_scale), m_rotation_vector);
-    auto scaled = glm::scale(rotated, m_scale);
-    auto scaled_and_translated = glm::translate(scaled, m_translation);
-    m_model = scaled_and_translated;
+    auto const rotated = glm::rotate(glm::mat4(1.f), glm::radians(m_rotation_scale), m_rotation_vector);
+    auto const translated = glm::translate(rotated, m_translation);
+    auto const scaled = glm::scale(translated, m_scale);
+    m_model = scaled;
   }
   // auto model() const { return m_model; }
   // void set_model(glm::mat4 m) { m_model = m; }
