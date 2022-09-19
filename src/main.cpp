@@ -69,10 +69,11 @@ auto get_root_directory() -> std::filesystem::path {
 
   do {
     path = path.parent_path();
-  } while (path.filename().string() != "zr");
-
+  } while (path.filename().string() != "zr" && path.string() != "/");
+    assert(path.string() != "/");
   return path;
 }
+
 int main() {
   auto const ren_directory = get_root_directory();
 
