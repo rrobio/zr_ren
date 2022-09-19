@@ -42,8 +42,8 @@ enum RenderIndex {
 
 int const screen_width = 1024;
 int const screen_height = 768;
-float const screen_aspect =
-    static_cast<float>(screen_width) / static_cast<float>(screen_height);
+float const screen_aspect = 4.f/3.f;
+    //static_cast<float>(screen_width) / static_cast<float>(screen_height);
 int const shadow_width = screen_width * 4;
 int const shadow_height = shadow_width;
 ;
@@ -83,7 +83,7 @@ int main() {
 
   auto cam = std::make_shared<ren::Camera>(
       ren::Camera(glm::vec3(-2.0f, 2.0f, 1.0f), glm::vec3(0.f, 0.f, -1.f),
-                  glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, screen_aspect));
+                  glm::vec3(0.0f, 1.0f, 0.0f), 100.0f, screen_aspect));
 
   glEnable(GL_DEPTH_TEST);
 
@@ -160,7 +160,7 @@ int main() {
       screen_width,
       screen_height,
       static_cast<float>(screen_width) / static_cast<float>(screen_height),
-      glm::perspective(glm::radians(cam->fov()), screen_aspect, 0.1f, 100.f),
+      glm::perspective(glm::radians(cam->fov()), screen_aspect, 0.1f, 50.f),
       cam,
   };
 

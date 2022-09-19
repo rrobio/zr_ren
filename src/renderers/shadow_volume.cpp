@@ -37,7 +37,7 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   glDisable(GL_STENCIL_TEST);
   glEnable(GL_DEPTH_TEST);
 
-  // RenderSceneIntoDepth();
+  // Render scene into depth
   glDrawBuffer(GL_NONE);
 
   m_first_pass.use();
@@ -51,8 +51,7 @@ void ShadowVolumeRenderer::render(const Scene &scene,
 
   glEnable(GL_STENCIL_TEST);
 
-  // RenderShadowVolIntoStencil();
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  // Render shadow volume into stencil
 
   glDepthMask(GL_FALSE);
   glEnable(GL_DEPTH_CLAMP);
@@ -60,22 +59,18 @@ void ShadowVolumeRenderer::render(const Scene &scene,
 
   // We need the stencil test to be enabled but we want it
   // to succeed always. Only the depth test matters.
-  glStencilFunc(GL_ALWAYS, 0, 0xff);
+  glStencilFunc(GL_ALWAYS, 0, 0xFF);
 
   glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
   glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 
   m_shadow_volume.use();
-
-  static float rot = 0.f;
-  rot += 0.1f;
   m_shadow_volume.set<vec3>("gLightPos", glm::vec4(light.translation(), 1.f));
   // Render the occluder
   m_shadow_volume.set("projection", trans.projection);
   m_shadow_volume.set("view", trans.cam->view());
   for (auto const &obj : scene.objects()) {
     m_shadow_volume.set("model", obj.model());
-    // m_shadow_volume.set<glm::mat4>("gWVP", view * obj.model());//glm::rotate(glm::mat4(1.f), glm::radians(rot), vec3(0.f, 1.f, 0.f)));
     obj.draw();
   }
 
@@ -84,7 +79,7 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   glDisable(GL_DEPTH_CLAMP);
   glEnable(GL_CULL_FACE);
 
-  // RenderShadowedScene();
+  // Render shadowed scene
   glDrawBuffer(GL_BACK);
 
   // Draw only if the corresponding stencil value is zero
@@ -120,12 +115,6 @@ void ShadowVolumeRenderer::render(const Scene &scene,
 }
 void ShadowVolumeRenderer::draw_dialog() {
   ImGui::Text("Shadow Volume");
-  // ImGui::Checkbox("Wireframe", &m_is_wireframe);
-  // if (m_is_wireframe) {
-  //   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  // } else {
-  //   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  // }
 }
 
 } // namespace ren

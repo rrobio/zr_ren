@@ -12,15 +12,13 @@ out vec4 finalColor;
 
 void main()
 {
-	// calculate the location of this fragment (pixel) in world coordinates
-    // vec3 fragPos = vec3(model * vec4(pos, 1));
-    vec3 fragPos = pos;//= vec3(model * vec4(pos, 1));
+    vec3 fragPos = pos;
 
 	// direction from light to surface
 	vec3 lightDir = normalize(lightPos - fragPos);
 
 	// compute ambient contribution
-	float ambientStrength = 0.1;
+	float ambientStrength = 0.2;
     vec3 ambient = ambientStrength * lightColor;
 
 	// compute diffuse contribution
