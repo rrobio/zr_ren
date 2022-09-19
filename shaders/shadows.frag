@@ -22,7 +22,7 @@ float shadow_calculation(vec3 frag_pos)
 {
     // get vector between fragment position and light position
     vec3 frag_to_light = frag_pos - light.position;
-    // ise the fragment to light vector to sample from the depth map
+    // use the fragment to light vector to sample from the depth map
     float closest_depth = texture(depth_map, frag_to_light).r;
     // it is currently in linear range between [0,1], let's re-transform it back to original depth value
     closest_depth *= far_plane;
@@ -31,8 +31,7 @@ float shadow_calculation(vec3 frag_pos)
     // test for shadows
     float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
     float shadow = current_depth -  bias > closest_depth ? 1.0 : 0.0;
-    // display closestDepth as debug (to visualize depth cubemap)
-	frag_color = vec4(vec3(closest_depth / far_plane), 1.0);
+    frag_color = vec4(vec3(closest_depth / far_plane), 1.0);
 
     return shadow;
 }

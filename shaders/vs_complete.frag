@@ -1,7 +1,7 @@
 #version 330 core
 
-in vec3 normal;
 in vec3 pos;
+in vec3 normal;
 
 uniform mat4 model;
 uniform vec3 lightPos;
@@ -13,7 +13,8 @@ out vec4 finalColor;
 void main()
 {
 	// calculate the location of this fragment (pixel) in world coordinates
-    vec3 fragPos = vec3(model * vec4(pos, 1));
+    // vec3 fragPos = vec3(model * vec4(pos, 1));
+    vec3 fragPos = pos;//= vec3(model * vec4(pos, 1));
 
 	// direction from light to surface
 	vec3 lightDir = normalize(lightPos - fragPos);

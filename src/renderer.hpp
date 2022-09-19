@@ -25,8 +25,6 @@ public:
   virtual ~Renderer(){};
   virtual void render(Scene const &, Transformations const &, double ticks) = 0;
   virtual void draw_dialog() = 0;
-
-private:
 };
 
 } // namespace ren

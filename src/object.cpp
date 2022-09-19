@@ -155,8 +155,8 @@ std::vector<GLuint> indices {0,2,1,0,2,1,3,5,4,3,5,4,6,8,7,6,8,7,9,11,10,9,11,10
 Object create_sphere(glm::vec3 cen, float r, std::shared_ptr<Material> mat) {
   auto obj = create_sphere();
 
-  obj.set_translation(cen);
   obj.set_scale(vec3(r));
+  obj.set_translation(cen);
   obj.update_model();
 
   obj.set_material(mat);

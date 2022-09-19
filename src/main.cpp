@@ -111,7 +111,7 @@ int main() {
       ren::Material::create_material_from_scatter<ren::diffuse_light>(
           color(1.f, 1.f, 1.f));
 
-  scene.add_light(ren::create_sphere(point3(0, 0, 0), 1.f, material_light));
+  scene.add_light(ren::create_sphere(point3(0, 0, 0), 0.1f, material_light));
 
   scene.add_object(ren::create_plane(vec3(0.f, -5.f, 0.f),
                                      vec3(20.f, 1.f, 20.f), material_plane));
