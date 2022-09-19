@@ -101,6 +101,25 @@ void ShadowVolumeRenderer::render(const Scene &scene,
     obj.draw();
   }
 
+  glEnable(GL_BLEND);
+  glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_ONE, GL_ONE);
+
+  m_complete.use();
+  m_complete.set<vec3>("lightPos", light.translation());
+
+  m_complete.set<vec3>("lightColor", vec3(1.f));
+
+  m_complete.set<glm::mat4>("projection", trans.projection);
+  m_complete.set<glm::mat4>("view", trans.cam->view());
+  for (auto const &obj : scene.objects()) {
+    m_complete.set<glm::mat4>("model", obj.model());
+    m_complete.set<vec3>("objectColor", vec3(0.4f));
+    obj.draw();
+  }
+
+  glDisable(GL_BLEND);
+
   glDepthMask(GL_TRUE);
   glDepthFunc(GL_LEQUAL);
 
@@ -113,8 +132,6 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   m_solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
   light.draw();
 }
-void ShadowVolumeRenderer::draw_dialog() {
-  ImGui::Text("Shadow Volume");
-}
+void ShadowVolumeRenderer::draw_dialog() { ImGui::Text("Shadow Volume"); }
 
 } // namespace ren
