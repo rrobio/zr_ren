@@ -12,7 +12,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-float EPSILON = 0.0001;
+float EPSILON = 0.005;
 
 // Emit a quad using a triangle strip
 void EmitQuad(vec3 StartVertex, vec3 EndVertex)
