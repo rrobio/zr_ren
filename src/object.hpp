@@ -99,6 +99,7 @@ private:
 Object create_sphere();
 Object create_sphere(glm::vec3 cen, float r, std::shared_ptr<Material> m);
 Object create_cube();
+Object create_cube(glm::vec3 cen, float r, std::shared_ptr<Material> m);
 Object create_textured_cube();
 Object create_plane();
 Object create_plane(glm::vec3 cen, vec3 scale, std::shared_ptr<Material> m);

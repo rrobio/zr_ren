@@ -2,6 +2,9 @@
 
 // TODO: move objects to separate .cpp files
 namespace ren {
+  
+using vec2 = glm::vec2;
+
 bool plane_hit(Object const &obj, ray const &r, float t_min, float t_max,
                hit_record &rec) {
 
@@ -79,7 +82,6 @@ bool sphere_hit(Object const &obj, ray const &r, float t_min, float t_max,
 }
 
 Object create_sphere() {
-  using vec2 = glm::vec2;
   // clang-format off
   std::vector<Vertex> verts {
     Vertex{vec3(0.000000,-1.000000,0.000000),vec3(0.187600,-0.794700,0.577400),vec2(0.181819,1.000000)},
@@ -164,103 +166,41 @@ Object create_sphere(glm::vec3 cen, float r, std::shared_ptr<Material> mat) {
 }
 
 Object create_cube() {
-  // clang-format off
-	constexpr std::array<float, 108> vertices {
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
+// clang-format off
+std::vector<Vertex> verts {
+    Vertex{vec3(1.000000,-1.000000,-1.000000),vec3(0.666667,-0.666667,-0.333333),vec2(2.094305,-0.396205)},
+    Vertex{vec3(1.000000,-1.000000,1.000000),vec3(0.408248,-0.408248,0.816497),vec2(1.396205,-1.094305)},
+    Vertex{vec3(-1.000000,-1.000000,1.000000),vec3(-0.666667,-0.666667,0.333333),vec2(0.698100,-0.396205)},
+    Vertex{vec3(-1.000000,-1.000000,-1.000000),vec3(-0.408248,-0.408248,-0.816497),vec2(1.396205,0.301900)},
+    Vertex{vec3(1.000000,1.000000,-1.000000),vec3(0.333333,0.666667,-0.666667),vec2(5.000000,-4.000000)},
+    Vertex{vec3(-1.000000,1.000000,-1.000000),vec3(-0.816497,0.408248,-0.408248),vec2(2.792410,-4.000000)},
+    Vertex{vec3(-1.000000,1.000000,1.000000),vec3(-0.333334,0.666667,0.666667),vec2(2.792410,-1.792410)},
+    Vertex{vec3(0.999999,1.000000,1.000001),vec3(0.816496,0.408248,0.408249),vec2(5.000000,-1.792410)},
+    Vertex{vec3(1.000000,1.000000,-1.000000),vec3(0.333333,0.666667,-0.666667),vec2(2.792410,-1.094305)},
+    Vertex{vec3(0.999999,1.000000,1.000001),vec3(0.816496,0.408248,0.408249),vec2(2.094305,-1.792410)},
+    Vertex{vec3(0.999999,1.000000,1.000001),vec3(0.816496,0.408248,0.408249),vec2(0.698100,-1.792410)},
+    Vertex{vec3(-1.000000,1.000000,1.000000),vec3(-0.333334,0.666667,0.666667),vec2(0.000000,-1.094305)},
+    Vertex{vec3(-1.000000,1.000000,1.000000),vec3(-0.333334,0.666667,0.666667),vec2(0.000000,0.301900)},
+    Vertex{vec3(-1.000000,1.000000,-1.000000),vec3(-0.816497,0.408248,-0.408248),vec2(0.698100,1.000000)},
+    Vertex{vec3(1.000000,1.000000,-1.000000),vec3(0.333333,0.666667,-0.666667),vec2(2.792410,0.301900)},
+    Vertex{vec3(-1.000000,1.000000,-1.000000),vec3(-0.816497,0.408248,-0.408248),vec2(2.094305,1.000000)},
+};
+std::vector<GLuint> indices_with_adj {0,7,1,6,2,3,0,1,2,5,3,4,4,3,5,2,6,7,4,5,6,1,7,0,0,3,4,6,7,1,0,4,7,6,1,2,1,0,7,4,6,2,1,7,6,5,2,0,2,1,6,4,5,3,2,6,5,4,3,0,4,7,0,2,3,5,4,0,3,2,5,6,};
+// clang-format off
+  return Object(verts, indices_with_adj, true);
+}
 
-		-0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
+Object create_cube(glm::vec3 cen, float r, std::shared_ptr<Material> mat) {
+  auto cube = create_cube();
 
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
+  cube.set_scale(vec3(r));
+  cube.set_translation(cen);
+  cube.update_model();
 
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
-	};
-	constexpr std::array<float, 108> normals {
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-
-	   -1.0f,  0.0f,  0.0f,
-	   -1.0f,  0.0f,  0.0f,
-	   -1.0f,  0.0f,  0.0f,
-	   -1.0f,  0.0f,  0.0f,
-	   -1.0f,  0.0f,  0.0f,
-	   -1.0f,  0.0f,  0.0f,
-
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f
-	};
-  // clang-format on
-
-  std::vector<Vertex> verts;
-  for (size_t i = 0; i < vertices.size(); i += 3) {
-    Vertex v;
-    v.pos = glm::vec3(vertices[i], vertices[i + 1], vertices[i + 2]);
-    v.norm = glm::vec3(normals[i], normals[i + 1], normals[i + 2]);
-    verts.push_back(v);
-  }
-  return Object(verts);
+  cube.set_material(mat);
+  cube.set_hit_function(sphere_hit);
+  
+  return cube;
 }
 
 Object create_textured_cube() {
@@ -413,33 +353,15 @@ Object create_textured_cube() {
 }
 Object create_plane() {
   // clang-format off
-	constexpr std::array<float, 18> vertices {
-		 1.0f, -0.5f,  1.0f,
-		-1.0f, -0.5f,  1.0f,
-		-1.0f, -0.5f, -1.0f,
-
-		 1.0f, -0.5f,  1.0f,
-		-1.0f, -0.5f, -1.0f,
-		 1.0f, -0.5f, -1.0f
-	};
-	constexpr std::array<float, 18> normals {
-		0.0f, 1.0f, 0,
-		0.0f, 1.0f, 0,
-		0.0f, 1.0f, 0,
-		0.0f, 1.0f, 0,
-		0.0f, 1.0f, 0,
-		0.0f, 1.0f, 0
-	};
-	// clang-format off
-
-	std::vector<Vertex> verts;
-	for (size_t i = 0; i < vertices.size(); i += 3) {
-		Vertex v;
-		v.pos = glm::vec3(vertices[i], vertices[i + 1], vertices[i + 2]);
-		v.norm = glm::vec3(normals[i], normals[i + 1], normals[i + 2]);
-		verts.push_back(v);
-	}
-	return Object(verts);
+std::vector<Vertex> verts {
+    Vertex{vec3(-1.000000,0.000000,1.000000),vec3(-0.000000,1.000000,-0.000000),vec2(0.000000,1.000000)},
+    Vertex{vec3(1.000000,0.000000,1.000000),vec3(-0.000000,1.000000,-0.000000),vec2(1.000000,1.000000)},
+    Vertex{vec3(1.000000,0.000000,-1.000000),vec3(-0.000000,1.000000,-0.000000),vec2(1.000000,0.000000)},
+    Vertex{vec3(-1.000000,0.000000,-1.000000),vec3(-0.000000,1.000000,-0.000000),vec2(0.000000,0.000000)},
+};
+std::vector<GLuint> indices_with_adj {0,2,1,0,2,3,0,1,2,0,3,2,};
+// clang-format off
+	return Object(verts,indices_with_adj, true);
 }
 
 Object create_plane(glm::vec3 cen, vec3 scale, std::shared_ptr<Material> mat) {
