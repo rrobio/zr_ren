@@ -6,7 +6,6 @@ layout (triangle_strip, max_vertices = 18) out; // 4 per quad * 3 triangle verti
 in vec3 PosL[]; // an array of 6 vertices (triangle with adjacency)
 
 uniform vec3 gLightPos;
-// uniform mat4 gWVP;
 
 uniform mat4 model;
 uniform mat4 view;

@@ -65,7 +65,7 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 
   m_shadow_volume.use();
-  m_shadow_volume.set<vec3>("gLightPos", glm::vec4(light.translation(), 1.f));
+  m_shadow_volume.set<vec3>("gLightPos", light.translation());
   // Render the occluder
   m_shadow_volume.set("projection", trans.projection);
   m_shadow_volume.set("view", trans.cam->view());
