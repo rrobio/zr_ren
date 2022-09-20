@@ -143,6 +143,8 @@ private:
   void thread_cleanup();
   
   
+  std::chrono::system_clock::time_point start_time;
+  std::chrono::system_clock::time_point stop_time;
   std::chrono::duration<double> elapsed_time;
 };
 

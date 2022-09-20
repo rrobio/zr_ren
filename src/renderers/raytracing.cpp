@@ -199,10 +199,10 @@ void RayTracingRenderer::render(const Scene &scene,
   a_scene = &scene;
   if (m_rendering) {
     if (is_render_done()) {
-      auto start = std::chrono::system_clock::now();
+      // auto start = std::chrono::system_clock::now();
       create_image_data();
-      auto end = std::chrono::system_clock::now();
-      elapsed_time = (end - start);
+      stop_time = std::chrono::system_clock::now();
+      elapsed_time = (stop_time - start_time);
       m_rendering = false;
       m_has_render = true;
       thread_cleanup();
@@ -302,6 +302,7 @@ void RayTracingRenderer::draw_dialog() {
   if (!m_rendering && !m_render_realtime) {
     if (ImGui::Button("Render Frame")) {
       render_frame(a_scene);
+      start_time = std::chrono::system_clock::now();
     }
   }
 
