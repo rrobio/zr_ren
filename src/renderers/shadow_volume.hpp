@@ -18,17 +18,11 @@ private:
   Shader m_first_pass;
   Shader m_material;
 
-  std::vector<Texture> m_textures;
-
-  bool showEdge {false};
-  bool showFrustum {false};
-	GLuint depthBuf;
-	GLuint ambBuf;
-	GLuint diffSpecTex;
-	GLuint colorDepthFBO = 0;
-	GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-  
-	GLuint bufHandle;
-	GLuint fsQuad = 1;
+  void render_into_depth(Scene const &scene, Transformations const &trans);
+  void render_shadow_volume_into_stencil(Scene const &scene,
+                                         Transformations const &trans);
+  void render_shadowed_scene(Scene const &scene, Transformations const &trans);
+  void render_ambient(Scene const &scene, Transformations const &trans);
+  void render_lights(Scene const &, Transformations const &);
 };
 } // namespace ren

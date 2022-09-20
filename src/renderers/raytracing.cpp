@@ -199,7 +199,10 @@ void RayTracingRenderer::render(const Scene &scene,
   a_scene = &scene;
   if (m_rendering) {
     if (is_render_done()) {
+      auto start = std::chrono::system_clock::now();
       create_image_data();
+      auto end = std::chrono::system_clock::now();
+      elapsed_time = (end - start);
       m_rendering = false;
       m_has_render = true;
       thread_cleanup();

@@ -5,6 +5,7 @@
 #include <array>
 #include <atomic>
 #include <thread>
+#include <chrono>
 
 // clang-format off
 #include "glad/glad.h"
@@ -32,6 +33,10 @@ public:
   void draw_dialog() override;
   void destroy() {
     destroy_realtime();
+  }
+  
+  auto elapsed() {
+      return std::chrono::duration_cast<std::chrono::microseconds>(elapsed_time);
   }
 
   struct RenderTaskArgs {
@@ -136,6 +141,9 @@ private:
   void rt_create_image_data();
   void save_to_file();
   void thread_cleanup();
+  
+  
+  std::chrono::duration<double> elapsed_time;
 };
 
 } // namespace ren

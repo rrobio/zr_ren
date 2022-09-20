@@ -22,20 +22,8 @@ ShadowVolumeRenderer::ShadowVolumeRenderer(
                            root_dir / "shaders/material.frag");
   assert(m_material.success());
 }
-ShadowVolumeRenderer::~ShadowVolumeRenderer() {}
-void ShadowVolumeRenderer::render(const Scene &scene,
-                                  Transformations const &trans, double ticks) {
-
-  auto &light = scene.lights().at(0);
-  auto const view = trans.cam->view();
-  auto const screen_width = trans.screen_width;
-  auto const screen_height = trans.screen_height;
-  glDepthMask(GL_TRUE);
-
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  glClearStencil(0);
-  glDisable(GL_STENCIL_TEST);
-  glEnable(GL_DEPTH_TEST);
+void ShadowVolumeRenderer::render_into_depth(Scene const &scene,
+                                             Transformations const &trans) {
 
   // Render scene into depth
   glDrawBuffer(GL_NONE);
@@ -43,13 +31,16 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   m_first_pass.use();
 
   m_first_pass.set("projection", trans.projection);
-  m_first_pass.set("view", view);
+  m_first_pass.set("view", trans.cam->view());
   for (auto const &obj : scene.objects()) {
     m_first_pass.set("model", obj.model());
     obj.draw();
   }
 
   glEnable(GL_STENCIL_TEST);
+}
+void ShadowVolumeRenderer::render_shadow_volume_into_stencil(
+    Scene const &scene, Transformations const &trans) {
 
   // Render shadow volume into stencil
 
@@ -65,7 +56,7 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 
   m_shadow_volume.use();
-  m_shadow_volume.set<vec3>("gLightPos", light.translation());
+  m_shadow_volume.set<vec3>("gLightPos", scene.lights().at(0).translation());
   // Render the occluder
   m_shadow_volume.set("projection", trans.projection);
   m_shadow_volume.set("view", trans.cam->view());
@@ -78,8 +69,9 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   // Restore local stuff
   glDisable(GL_DEPTH_CLAMP);
   glEnable(GL_CULL_FACE);
-
-  // Render shadowed scene
+}
+void ShadowVolumeRenderer::render_shadowed_scene(Scene const &scene,
+                                                 Transformations const &trans) {
   glDrawBuffer(GL_BACK);
 
   // Draw only if the corresponding stencil value is zero
@@ -89,7 +81,7 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
   m_complete.use();
-  m_complete.set<vec3>("lightPos", light.translation());
+  m_complete.set<vec3>("lightPos", scene.lights().at(0).translation());
 
   m_complete.set<vec3>("lightColor", vec3(1.f));
 
@@ -100,13 +92,15 @@ void ShadowVolumeRenderer::render(const Scene &scene,
     m_complete.set<vec3>("objectColor", vec3(0.4f));
     obj.draw();
   }
-
+}
+void ShadowVolumeRenderer::render_ambient(Scene const &scene,
+                                          Transformations const &trans) {
   glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_ONE, GL_ONE);
 
   m_complete.use();
-  m_complete.set<vec3>("lightPos", light.translation());
+  m_complete.set<vec3>("lightPos", scene.lights().at(0).translation());
 
   m_complete.set<vec3>("lightColor", vec3(1.f));
 
@@ -117,6 +111,38 @@ void ShadowVolumeRenderer::render(const Scene &scene,
     m_complete.set<vec3>("objectColor", vec3(0.4f));
     obj.draw();
   }
+}
+
+void ShadowVolumeRenderer::render_lights(Scene const &scene,
+                                         Transformations const &trans) {
+  auto const &light = scene.lights().at(0);
+  m_solid_shader.use();
+  m_solid_shader.set<glm::mat4>("projection", trans.projection);
+  m_solid_shader.set<glm::mat4>("view", trans.cam->view());
+  m_solid_shader.set<glm::mat4>("model", light.model());
+  m_solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
+  light.draw();
+}
+
+ShadowVolumeRenderer::~ShadowVolumeRenderer() {}
+void ShadowVolumeRenderer::render(const Scene &scene,
+                                  Transformations const &trans, double ticks) {
+
+  auto &light = scene.lights().at(0);
+  auto const view = trans.cam->view();
+  auto const screen_width = trans.screen_width;
+  auto const screen_height = trans.screen_height;
+  glDepthMask(GL_TRUE);
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  glClearStencil(0);
+  glDisable(GL_STENCIL_TEST);
+  glEnable(GL_DEPTH_TEST);
+
+  render_into_depth(scene, trans);
+  render_shadow_volume_into_stencil(scene, trans);
+  render_shadowed_scene(scene, trans);
+  render_ambient(scene, trans);
 
   glDisable(GL_BLEND);
 
@@ -124,13 +150,7 @@ void ShadowVolumeRenderer::render(const Scene &scene,
   glDepthFunc(GL_LEQUAL);
 
   glDisable(GL_STENCIL_TEST);
-
-  m_solid_shader.use();
-  m_solid_shader.set<glm::mat4>("projection", trans.projection);
-  m_solid_shader.set<glm::mat4>("view", trans.cam->view());
-  m_solid_shader.set<glm::mat4>("model", light.model());
-  m_solid_shader.set<glm::vec3>("color", {1.f, 1.f, 1.f});
-  light.draw();
+  render_lights(scene, trans);
 }
 void ShadowVolumeRenderer::draw_dialog() { ImGui::Text("Shadow Volume"); }
 

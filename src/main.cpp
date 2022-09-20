@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cassert>
+#include <chrono>
 #include <filesystem>
 #include <functional>
 #include <iostream>
@@ -42,8 +43,8 @@ enum RenderIndex {
 
 int const screen_width = 1024;
 int const screen_height = 768;
-float const screen_aspect = 4.f/3.f;
-    //static_cast<float>(screen_width) / static_cast<float>(screen_height);
+float const screen_aspect = 4.f / 3.f;
+// static_cast<float>(screen_width) / static_cast<float>(screen_height);
 int const shadow_width = screen_width * 4;
 int const shadow_height = shadow_width;
 ;
@@ -70,7 +71,7 @@ auto get_root_directory() -> std::filesystem::path {
   do {
     path = path.parent_path();
   } while (path.filename().string() != "zr" && path.string() != "/");
-    assert(path.string() != "/");
+  assert(path.string() != "/");
   return path;
 }
 
@@ -180,6 +181,7 @@ int main() {
   auto new_render_index = current_render_index;
 
   bool pause_scene = false;
+  bool benchmark = false;
   while (!window.should_close()) {
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -212,8 +214,13 @@ int main() {
       }
     }
 
+    auto start = std::chrono::system_clock::now();
     current_renderer->render(scene, transformations, ticks);
-
+    auto end = std::chrono::system_clock::now();
+    
+    auto const elapsed =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    
     window.poll_events();
     window.exec_keymap();
     if (!debug)
@@ -222,6 +229,14 @@ int main() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    
+    if (benchmark) {
+      if (current_render_index == RenderIndex::raytracing) {
+       ren::Log::the().add_log("Render of a frame took: %zu us\n", raytracing_renderer->elapsed()); 
+      } else 
+       ren::Log::the().add_log("Render of a frame took: %zu us\n", elapsed.count()); 
+      benchmark = false;
+    }
 
     auto frametime = glfwGetTime() - ticks;
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
@@ -234,6 +249,7 @@ int main() {
 
     ImGui::Begin("Renderer");
     ImGui::Checkbox("Puase scene", &pause_scene);
+    ImGui::Checkbox("Benchmark", &benchmark);
     const char *items[] = {"Simple Shadow Mapping", "Shadow Volume", "Material",
                            "RayTracing"};
     static int combo_index = static_cast<int>(current_render_index);
