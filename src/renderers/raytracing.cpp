@@ -326,6 +326,7 @@ void RayTracingRenderer::draw_dialog() {
 void RayTracingRenderer::setup_threads(ThreadTask task, Scene const *scene) {
   auto stepper = [](int height, int n_threads) -> std::vector<Bounds> {
     std::vector<Bounds> ret;
+    assert(n_threads > 0 && n_threads < 16);
     int step = height / n_threads;
     int cur_step = 0;
     for (int i = 0; i < n_threads; i++) {

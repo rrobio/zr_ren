@@ -190,7 +190,7 @@ int main() {
 
     if (!pause_scene) {
       auto const light_pos =
-          glm::vec3(glm::sin(ticks) * 3, 8.f, glm::cos(ticks) * 3);
+          glm::vec3(glm::sin(ticks) * 3, 10.f, glm::cos(ticks) * 3);
 
       scene.light_at(0)->set_translation(light_pos);
       scene.light_at(0)->update_model();

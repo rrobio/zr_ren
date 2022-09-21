@@ -38,7 +38,7 @@ float shadow_calculation(vec3 frag_pos)
 
 void main()
 {
-	vec3 color = vec3(0.2f, 0.3f, 0.4f);//texture(diffuse_texture, fs_in.tex_coords).rgb;// FIXME: get color from material
+	vec3 color = vec3(0.5f, 0.6f, 0.7f);//texture(diffuse_texture, fs_in.tex_coords).rgb;// FIXME: get color from material
 	vec3 norm = normalize(fs_in.normal);
 	vec3 light_color = vec3(0.3);
 
