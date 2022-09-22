@@ -17,7 +17,7 @@ public:
                         int const a_shadow_width, int const a_shadow_height);
   ~ShadowMappingRenderer() = default;
   void render(const Scene &, Transformations const &, double ticks) override;
-  void draw_dialog() override { ImGui::Text("test"); }
+  void draw_dialog() override { ImGui::Text("Simple Shadow Maps"); }
 
 private:
   Shader m_solid_shader;

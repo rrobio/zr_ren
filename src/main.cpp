@@ -37,7 +37,6 @@
 enum RenderIndex {
   simple_shadow_mapping = 0,
   shadow_volume,
-  material,
   raytracing,
 };
 
@@ -70,7 +69,7 @@ auto get_root_directory() -> std::filesystem::path {
 
   do {
     path = path.parent_path();
-  } while (path.filename().string() != "zr" && path.string() != "/");
+  } while (path.filename().string() != "zr" && path.filename().string() != "zr_ren" && path.string() != "/");
   assert(path.string() != "/");
   return path;
 }
@@ -205,9 +204,6 @@ int main() {
       case RenderIndex::shadow_volume:
         current_renderer = svrenderer;
         break;
-      case RenderIndex::material:
-        current_renderer = materialrenderer;
-        break;
       case RenderIndex::raytracing:
         current_renderer = raytracing_renderer;
         break;
@@ -250,7 +246,7 @@ int main() {
     ImGui::Begin("Renderer");
     ImGui::Checkbox("Puase scene", &pause_scene);
     ImGui::Checkbox("Benchmark", &benchmark);
-    const char *items[] = {"Simple Shadow Mapping", "Shadow Volume", "Material",
+    const char *items[] = {"Simple Shadow Mapping", "Shadow Volume",
                            "RayTracing"};
     static int combo_index = static_cast<int>(current_render_index);
     ImGui::Combo("Renderer", &combo_index, items, IM_ARRAYSIZE(items));
